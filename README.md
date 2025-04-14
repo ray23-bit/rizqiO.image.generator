@@ -1,0 +1,1 @@
+# rizqioliveira.ai.image.generator
