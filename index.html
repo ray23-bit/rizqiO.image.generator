@@ -1,21 +1,166 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>AI Image Generator - Rizqi Oliveira</title>
-</head>
-<body style="text-align:center;">
-  <h1>AI Image Generator by Rizqi Oliveira</h1>
-  <input type="text" id="prompt" placeholder="Masukkan deskripsi gambar..." style="width:300px;">
-  <button onclick="generateImage()">Generate</button>
-  <br><br>
-  <img id="resultImage" src="" alt="Generated Image" style="max-width:100%;">
-  <script>
-    function generateImage() {
-      const prompt = document.getElementById("prompt").value;
-      const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}`;
-      document.getElementById("resultImage").src = imageUrl;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Image Generator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+      color: #fff;
+      padding: 20px;
     }
-  </script>
-</body>
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: #1e1e2f;
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.3);
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    select, input[type="text"], button {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+    button {
+      background-color: #00b894;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #019875;
+    }
+    #loading {
+      display: none;
+      text-align: center;
+      margin: 20px 0;
+    }
+    #loading span {
+      animation: spin 1s linear infinite;
+      display: inline-block;
+      font-size: 24px;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    #image-container {
+      text-align: center;
+      margin-top: 20px;
+    }
+    #image-container img {
+      max-width: 100%;
+      border-radius: 12px;
+    }
+    .dual {
+      display: flex;
+      gap: 10px;
+    }
+    .dual select {
+      flex: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>AI Image Generator</h1>
+    <input type="text" id="prompt" placeholder="Enter your prompt here..."><div class="dual">
+  <select id="style">
+    <option value="">Select Style</option>
+  </select>
+  <select id="effect">
+    <option value="">Select Effect</option>
+  </select>
+</div>
+
+<select id="aspect">
+  <option value="">Select Aspect Ratio</option>
+  <option value="1:1">1:1</option>
+  <option value="4:3">4:3</option>
+  <option value="16:9">16:9</option>
+  <option value="9:16">9:16</option>
+  <option value="3:2">3:2</option>
+</select>
+
+<button onclick="generateImage()">Generate Image</button>
+<button onclick="resetPrompt()">Reset Prompt</button>
+
+<div id="loading"><span>⏳</span> Generating...</div>
+<div id="image-container"></div>
+
+  </div>  <script>
+    const styleList = Array.from({ length: 100 }, (_, i) => `Style ${i + 1}`);
+    const effectList = Array.from({ length: 100 }, (_, i) => `Effect ${i + 1}`);
+
+    const styleSelect = document.getElementById('style');
+    const effectSelect = document.getElementById('effect');
+
+    styleList.forEach(style => {
+      const opt = document.createElement('option');
+      opt.value = style;
+      opt.textContent = style;
+      styleSelect.appendChild(opt);
+    });
+
+    effectList.forEach(effect => {
+      const opt = document.createElement('option');
+      opt.value = effect;
+      opt.textContent = effect;
+      effectSelect.appendChild(opt);
+    });
+
+    function resetPrompt() {
+      document.getElementById('prompt').value = '';
+      styleSelect.selectedIndex = 0;
+      effectSelect.selectedIndex = 0;
+      document.getElementById('aspect').selectedIndex = 0;
+      document.getElementById('image-container').innerHTML = '';
+    }
+
+    function generateImage() {
+      const prompt = document.getElementById('prompt').value.trim();
+      const style = styleSelect.value;
+      const effect = effectSelect.value;
+      const aspect = document.getElementById('aspect').value;
+
+      if (!prompt) return alert("Please enter a prompt");
+
+      document.getElementById('loading').style.display = 'block';
+      document.getElementById('image-container').innerHTML = '';
+
+      const seed = Math.floor(Math.random() * 100000);
+      const fullPrompt = `${prompt}, ${style}, ${effect}`;
+      const ratio = aspect || '1:1';
+      const aspectParam = ratio.replace(':', 'x');
+
+      const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}?aspect=${aspectParam}&seed=${seed}`;
+
+      const img = document.createElement('img');
+      img.onload = () => {
+        document.getElementById('loading').style.display = 'none';
+        const container = document.getElementById('image-container');
+        container.appendChild(img);
+
+        const link = document.createElement('a');
+        link.href = img.src;
+        link.download = 'generated-image.jpg';
+        link.textContent = 'Download Image';
+        link.style.display = 'block';
+        link.style.marginTop = '10px';
+        link.style.color = '#00cec9';
+        container.appendChild(link);
+      };
+
+      img.src = url;
+    }
+  </script></body>
 </html>
