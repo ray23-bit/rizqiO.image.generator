@@ -1,66 +1,50 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Image Generator</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f5f7ff;
-            margin: 0;
-            padding: 20px;
-        }
-            .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        h1 {
-            background: linear-gradient(135deg, #4A6CF7, #9C27B0);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-align: center;
-        }
-        #result {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-        .image-card {
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>AI Image Generator</h1>
-        <div class="controls">
-            <textarea id="prompt" placeholder="Describe the image..." rows="3"></textarea>
-            <button id="generate">Generate</button>
-        </div>
-        <div id="result"></div>
-    </div>
+<h2>RizqiO-AI - Advanced Image Generator</h2>
 
-    <script>
-        document.getElementById('generate').addEventListener('click', () => {
-            const prompt = document.getElementById('prompt').value;
-            if (!prompt) return alert('Please enter a prompt');
-            
-            const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}`;
-            
-            const img = document.createElement('img');
-            img.src = url;
-            img.alt = prompt;
-            img.classList.add('image-card');
-            document.getElementById('result').appendChild(img);
-        });
-    </script>
-</body>
-</html>
+<label><b>Prompt Deskripsi:</b></label><br>
+<input id="prompt" placeholder="Contoh: naga terbang di langit malam" style="width:100%;padding:6px;"><br><br>
+
+<label><b>Gaya Seni:</b></label><br>
+<select id="style" style="width:100%;padding:6px;">
+  <option value="">(Pilih gaya)</option>
+  <option>anime</option>
+  <option>realistic</option>
+  <option>cyberpunk</option>
+  <option>fantasy art</option>
+  <option>pixel art</option>
+  <option>oil painting</option>
+</select><br><br>
+
+<label><b>Efek Tambahan:</b></label><br>
+<select id="effect" style="width:100%;padding:6px;">
+  <option value="">(Tanpa efek)</option>
+  <option>glow</option>
+  <option>cinematic lighting</option>
+  <option>volumetric light</option>
+  <option>rain effect</option>
+  <option>smoke</option>
+</select><br><br>
+
+<button onclick="generate()" style="padding:10px 20px;background:#000;color:#fff;border:none;border-radius:8px;">Generate</button>
+
+<div id="output" style="margin-top:20px;"></div>
+
+<script>
+  function generate() {
+    const prompt = document.getElementById("prompt").value.trim();
+    const style = document.getElementById("style").value;
+    const effect = document.getElementById("effect").value;
+
+    let fullPrompt = prompt;
+    if (style) fullPrompt += ", " + style;
+    if (effect) fullPrompt += ", " + effect;
+
+    const encoded = encodeURIComponent(fullPrompt);
+    const imageUrl = `https://image.pollinations.ai/prompt/${encoded}`;
+    
+    document.getElementById("output").innerHTML = `
+      <p><b>Hasil Gambar:</b></p>
+      <img src="${imageUrl}" style="max-width:100%;border-radius:12px;box-shadow:0 0 12px #ccc;">
+      <br><br><a href="${imageUrl}" download="rizqio-ai-image.jpg">Download Image</a>
+    `;
+  }
+</script>
