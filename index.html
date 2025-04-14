@@ -3,31 +3,31 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Aspect Ratio Selector</title>
+  <title>AI Image Generator</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: linear-gradient(135deg, #0f52ba, #a1c4fd);
       color: #fff;
       min-height: 100vh;
       display: flex;
-      justify-content: center;
-      align-items: center;
       flex-direction: column;
+      align-items: center;
       padding: 2rem;
     }
     h1 {
       margin-bottom: 1rem;
     }
-    .container {
+    .generator {
       background: rgba(255, 255, 255, 0.1);
       padding: 1.5rem;
       border-radius: 1rem;
       box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-      width: 300px;
-      text-align: center;
+      max-width: 600px;
+      width: 100%;
     }
-    select, input {
+    textarea, select, input {
       width: 100%;
       padding: 0.75rem;
       margin: 0.5rem 0;
@@ -48,16 +48,78 @@
     button:hover {
       background: #2575fc;
     }
-    .result {
+    .loading {
       margin-top: 1rem;
       font-weight: bold;
+      color: #fff;
+    }
+    .images {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+      margin-top: 2rem;
+      width: 100%;
+    }
+    .image-card {
+      position: relative;
+    }
+    .image-card img {
+      width: 100%;
+      border-radius: 0.5rem;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      object-fit: cover;
+    }
+    .download-btn {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      background: rgba(0,0,0,0.5);
+      color: #fff;
+      padding: 0.3rem 0.6rem;
+      border-radius: 0.3rem;
+      font-size: 0.8rem;
+      text-decoration: none;
+    }
+    .loading-animation {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border: 4px solid #fff;
+      border-top: 4px solid #0f52ba;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
   </style>
 </head>
 <body>
-
-  <h1>Aspect Ratio Selector</h1>
-  <div class="container">
+  <h1>AI Image Generator</h1>
+  <div class="generator">
+    <textarea id="prompt" rows="3" placeholder="Enter image prompt..."></textarea>
+    <select id="model">
+      <option value="Stable Diffusion">Stable Diffusion</option>
+      <option value="DALL-E">DALL-E</option>
+      <option value="FLUX">FLUX</option>
+    </select>
+    <select id="style">
+      <option value="Style 1">Style 1</option>
+      <option value="Style 2">Style 2</option>
+      <option value="Style 3">Style 3</option>
+      <!-- Add 100 styles here -->
+    </select>
+    <select id="effect">
+      <option value="Effect 1">Effect 1</option>
+      <option value="Effect 2">Effect 2</option>
+      <option value="Effect 3">Effect 3</option>
+      <!-- Add 100 effects here -->
+    </select>
     <select id="aspectRatio" onchange="setAspectRatio()">
       <option value="1:1">1:1 (Square)</option>
       <option value="9:16">9:16 (Portrait)</option>
@@ -65,14 +127,15 @@
       <option value="4:3">4:3</option>
       <option value="3:2">3:2</option>
     </select>
-    
     <input type="number" id="width" placeholder="Width (512-1024)" min="512" max="1024" value="512" />
     <input type="number" id="height" placeholder="Height (512-1024)" min="512" max="1024" value="512" />
-    
-    <button onclick="displayResult()">Apply Aspect Ratio</button>
-    
-    <div class="result" id="result"></div>
+    <input type="number" id="steps" placeholder="Steps (20-100)" min="20" max="100" value="50" />
+    <button onclick="generateImage()">Generate</button>
+    <div class="loading" id="loading">Generating image...</div>
+    <div class="loading-animation" id="loadingAnimation"></div>
   </div>
+
+  <div class="images" id="imageGrid"></div>
 
   <script>
     function setAspectRatio() {
@@ -102,14 +165,53 @@
       heightInput.value = height;
     }
 
-    function displayResult() {
+    async function generateImage() {
+      const prompt = document.getElementById("prompt").value.trim();
+      const model = document.getElementById("model").value;
+      const style = document.getElementById("style").value;
+      const effect = document.getElementById("effect").value;
       const width = document.getElementById("width").value;
       const height = document.getElementById("height").value;
-      const result = document.getElementById("result");
+      const steps = document.getElementById("steps").value;
+      const loading = document.getElementById("loading");
+      const loadingAnimation = document.getElementById("loadingAnimation");
+      const imageGrid = document.getElementById("imageGrid");
 
-      result.textContent = `Selected Aspect Ratio: ${width}x${height}`;
+      if (!prompt) return alert("Please enter a prompt.");
+
+      loading.style.display = "block";
+      loadingAnimation.style.display = "block";
+
+      const fullPrompt = `${prompt} | model: ${model} | style: ${style} | effect: ${effect}`;
+      const apiUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}?width=${width}&height=${height}&steps=${steps}`;
+
+      try {
+        const img = document.createElement("img");
+        img.src = apiUrl;
+        img.alt = prompt;
+        img.onload = () => {
+          loading.style.display = "none";
+          loadingAnimation.style.display = "none";
+        };
+
+        const card = document.createElement("div");
+        card.className = "image-card";
+        const downloadLink = document.createElement("a");
+        downloadLink.href = apiUrl;
+        downloadLink.download = "generated-image.jpg";
+        downloadLink.textContent = "Download";
+        downloadLink.className = "download-btn";
+
+        card.appendChild(img);
+        card.appendChild(downloadLink);
+        imageGrid.prepend(card);
+      } catch (err) {
+        loading.style.display = "none";
+        loadingAnimation.style.display = "none";
+        alert("Failed to generate image. Please try again later.");
+        console.error(err);
+      }
     }
   </script>
-
 </body>
 </html>
