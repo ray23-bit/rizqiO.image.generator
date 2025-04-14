@@ -1,9 +1,9 @@
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>AI Image Generator</title>
+  <title>Cah KENTHIR AI</title>
   <style>
     body {
       margin: 0;
@@ -15,12 +15,10 @@
       align-items: center;
       padding: 2rem;
     }
-
     h1 {
       margin-bottom: 1rem;
       text-align: center;
     }
-
     .container {
       background: rgba(255, 255, 255, 0.08);
       border-radius: 16px;
@@ -29,7 +27,6 @@
       width: 100%;
       backdrop-filter: blur(10px);
     }
-
     textarea, select, button {
       width: 100%;
       margin: 0.5rem 0;
@@ -38,67 +35,57 @@
       border: none;
       border-radius: 8px;
     }
-
     button {
       background-color: #4caf50;
       color: white;
       cursor: pointer;
     }
-
     button:hover {
       background-color: #45a049;
     }
-
     .image-container {
       margin-top: 1rem;
       width: 100%;
       display: flex;
       justify-content: center;
     }
-
     #output {
       display: none;
       border-radius: 12px;
       max-width: 100%;
       object-fit: contain;
     }
-
     .download-btn {
       background-color: #2196f3;
       margin-top: 1rem;
       display: none;
       text-align: center;
-      text-decoration: none;
       padding: 0.75rem;
       border-radius: 8px;
+      text-decoration: none;
       color: white;
     }
-
     .aspect-select {
       display: flex;
       flex-wrap: wrap;
       gap: 0.5rem;
       margin-bottom: 1rem;
     }
-
     .aspect-select button {
       flex: 1;
       background: #333;
       font-size: 0.9rem;
     }
-
     .row {
       display: flex;
       gap: 0.5rem;
       flex-wrap: wrap;
     }
-
     #loader {
       display: none;
       text-align: center;
       margin-top: 1rem;
     }
-
     .loader-spinner {
       border: 5px solid rgba(255, 255, 255, 0.3);
       border-top: 5px solid #fff;
@@ -108,7 +95,6 @@
       animation: spin 1s linear infinite;
       margin: auto;
     }
-
     @keyframes spin {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
@@ -116,37 +102,23 @@
   </style>
 </head>
 <body>
-  <h1>AI Image Generator</h1>
+  <h1>Cah KENTHIR AI v2</h1>
   <div class="container">
-    <textarea id="prompt" placeholder="Enter your image prompt here..."></textarea>
+    <textarea id="prompt" placeholder="Tulis deskripsi gambar..."></textarea>
 
     <div class="row">
       <select id="style">
-        <option value="">-- Select Art Style --</option>
-        <option value="cyberpunk">Cyberpunk</option>
-        <option value="fantasy">Fantasy</option>
-        <option value="pixel art">Pixel Art</option>
-        <option value="steampunk">Steampunk</option>
-        <option value="vaporwave">Vaporwave</option>
+        <option value="">-- Pilih Gaya Seni --</option>
       </select>
-
       <select id="effect">
-        <option value="">-- Select Effect --</option>
-        <option value="glow">Glow</option>
-        <option value="cinematic lighting">Cinematic Lighting</option>
-        <option value="neon light">Neon Light</option>
-        <option value="soft focus">Soft Focus</option>
-        <option value="dramatic shadows">Dramatic Shadows</option>
+        <option value="">-- Pilih Efek Visual --</option>
       </select>
     </div>
 
     <div class="aspect-select">
-      <button onclick="setAspect('1:1')">1:1</button>
-      <button onclick="setAspect('16:9')">16:9</button>
-      <button onclick="setAspect('9:16')">9:16</button>
-      <button onclick="setAspect('4:3')">4:3</button>
-      <button onclick="setAspect('3:2')">3:2</button>
-      <button onclick="setAspect('2:3')">2:3</button>
+      <button onclick="setAspect('1024x1024')">1:1</button>
+      <button onclick="setAspect('1792x1024')">16:9</button>
+      <button onclick="setAspect('1024x1792')">9:16</button>
     </div>
 
     <button onclick="generateImage()">Generate Image</button>
@@ -161,23 +133,42 @@
       <img id="output" src="" />
     </div>
 
-    <a id="downloadLink" class="download-btn" download="ai-image.png">Download Image</a>
+    <a id="downloadLink" class="download-btn" download="generated-image.png">Download Image</a>
   </div>
 
   <script>
-    let selectedAspect = "1:1";
+    const styleOptions = [
+      "cyberpunk", "fantasy", "pixel art", "steampunk", "vaporwave", "realism", "gothic", "watercolor", "anime", "sketch",
+      "low poly", "3D render", "concept art", "line art", "retro", "digital painting", "surrealism", "futuristic", "dark art", "dreamy",
+      "baroque", "minimalist", "expressionism", "noir", "art nouveau", "vintage", "oil painting", "synthwave", "cartoon", "mystical"
+    ];
 
-    const aspectMap = {
-      "1:1": { size: "1024x1024", ratio: "1 / 1" },
-      "16:9": { size: "1792x1024", ratio: "16 / 9" },
-      "9:16": { size: "1024x1792", ratio: "9 / 16" },
-      "4:3": { size: "1366x1024", ratio: "4 / 3" },
-      "3:2": { size: "1536x1024", ratio: "3 / 2" },
-      "2:3": { size: "1024x1536", ratio: "2 / 3" }
-    };
+    const effectOptions = [
+      "glow", "cinematic lighting", "neon light", "soft focus", "dramatic shadows", "motion blur", "bokeh", "depth of field", "grainy", "dream-like",
+      "pastel filter", "dark ambiance", "hazy", "color pop", "vignette", "lens flare", "ambient light", "rim light", "vibrant", "eerie"
+    ];
 
-    function setAspect(ratio) {
-      selectedAspect = ratio;
+    const styleSelect = document.getElementById("style");
+    const effectSelect = document.getElementById("effect");
+
+    styleOptions.forEach(style => {
+      const opt = document.createElement("option");
+      opt.value = style;
+      opt.textContent = style.charAt(0).toUpperCase() + style.slice(1);
+      styleSelect.appendChild(opt);
+    });
+
+    effectOptions.forEach(effect => {
+      const opt = document.createElement("option");
+      opt.value = effect;
+      opt.textContent = effect.charAt(0).toUpperCase() + effect.slice(1);
+      effectSelect.appendChild(opt);
+    });
+
+    let selectedAspect = '1024x1024';
+
+    function setAspect(size) {
+      selectedAspect = size;
     }
 
     function resetAll() {
@@ -188,39 +179,30 @@
     }
 
     async function generateImage() {
-      const promptText = document.getElementById('prompt').value.trim();
+      const prompt = document.getElementById('prompt').value.trim();
       const style = document.getElementById('style').value;
       const effect = document.getElementById('effect').value;
 
-      if (!promptText) return alert("Please enter a prompt");
+      if (!prompt) return alert("Masukkan deskripsi gambar!");
 
-      const { size, ratio } = aspectMap[selectedAspect] || aspectMap["1:1"];
-      const fullPrompt = `${promptText}, ${style}, ${effect}`.replace(/,\s*,/g, ',');
+      document.getElementById('loader').style.display = 'block';
+      document.getElementById('output').style.display = 'none';
+      document.getElementById('downloadLink').style.display = 'none';
 
-      const loader = document.getElementById("loader");
-      const output = document.getElementById("output");
-      const downloadLink = document.getElementById("downloadLink");
+      const finalPrompt = encodeURIComponent(`${prompt}, ${style}, ${effect}`);
+      const imgUrl = `https://image.pollinations.ai/prompt/${finalPrompt}?size=${selectedAspect}&watermark=false`;
 
-      loader.style.display = 'block';
-      output.style.display = 'none';
-      downloadLink.style.display = 'none';
+      const output = document.getElementById('output');
+      output.src = imgUrl;
 
-      try {
-        const response = await fetch(`https://image.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}?size=${size}`);
-        const blob = await response.blob();
-        const url = URL.createObjectURL(blob);
-
-        output.src = url;
+      output.onload = () => {
+        document.getElementById('loader').style.display = 'none';
         output.style.display = 'block';
-        output.style.aspectRatio = ratio;
 
-        downloadLink.href = url;
+        const downloadLink = document.getElementById('downloadLink');
+        downloadLink.href = imgUrl;
         downloadLink.style.display = 'inline-block';
-      } catch (err) {
-        alert("Failed to generate image. Please try again.");
-      } finally {
-        loader.style.display = 'none';
-      }
+      };
     }
   </script>
 </body>
