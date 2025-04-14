@@ -7,7 +7,7 @@
     body {
       margin: 0;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #800000, #00bfff);
+      background: linear-gradient(135deg, #0f52ba, #a1c4fd);
       color: #fff;
       min-height: 100vh;
       display: flex;
@@ -50,6 +50,7 @@
     .loading {
       margin-top: 1rem;
       font-weight: bold;
+      color: #fff;
     }
     .images {
       display: grid;
@@ -77,6 +78,23 @@
       font-size: 0.8rem;
       text-decoration: none;
     }
+    .loading-animation {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border: 4px solid #fff;
+      border-top: 4px solid #0f52ba;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
   </style>
 </head>
 <body>
@@ -88,33 +106,53 @@
       <option value="DALL-E">DALL-E</option>
       <option value="FLUX">FLUX</option>
     </select>
+    <select id="style">
+      <option value="Style 1">Style 1</option>
+      <option value="Style 2">Style 2</option>
+      <option value="Style 3">Style 3</option>
+      <!-- Add 100 styles here -->
+    </select>
+    <select id="effect">
+      <option value="Effect 1">Effect 1</option>
+      <option value="Effect 2">Effect 2</option>
+      <option value="Effect 3">Effect 3</option>
+      <!-- Add 100 effects here -->
+    </select>
     <input type="number" id="width" placeholder="Width (512-1024)" min="512" max="1024" value="512" />
     <input type="number" id="height" placeholder="Height (512-1024)" min="512" max="1024" value="512" />
     <input type="number" id="steps" placeholder="Steps (20-100)" min="20" max="100" value="50" />
     <button onclick="generateImage()">Generate</button>
-    <div class="loading" id="loading" style="display:none;">Generating image...</div>
+    <div class="loading" id="loading">Generating image...</div>
+    <div class="loading-animation" id="loadingAnimation"></div>
   </div>  <div class="images" id="imageGrid"></div>  <script>
     async function generateImage() {
       const prompt = document.getElementById("prompt").value.trim();
       const model = document.getElementById("model").value;
+      const style = document.getElementById("style").value;
+      const effect = document.getElementById("effect").value;
       const width = document.getElementById("width").value;
       const height = document.getElementById("height").value;
       const steps = document.getElementById("steps").value;
       const loading = document.getElementById("loading");
+      const loadingAnimation = document.getElementById("loadingAnimation");
       const imageGrid = document.getElementById("imageGrid");
 
       if (!prompt) return alert("Please enter a prompt.");
 
       loading.style.display = "block";
+      loadingAnimation.style.display = "block";
 
-      const fullPrompt = `${prompt} | model: ${model}`;
+      const fullPrompt = `${prompt} | model: ${model} | style: ${style} | effect: ${effect}`;
       const apiUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}?width=${width}&height=${height}&steps=${steps}`;
 
       try {
         const img = document.createElement("img");
         img.src = apiUrl;
         img.alt = prompt;
-        img.onload = () => loading.style.display = "none";
+        img.onload = () => {
+          loading.style.display = "none";
+          loadingAnimation.style.display = "none";
+        };
 
         const card = document.createElement("div");
         card.className = "image-card";
@@ -129,6 +167,7 @@
         imageGrid.prepend(card);
       } catch (err) {
         loading.style.display = "none";
+        loadingAnimation.style.display = "none";
         alert("Failed to generate image. Please try again later.");
         console.error(err);
       }
