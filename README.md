@@ -1,1 +1,1 @@
-# rizqioliveira.ai.image.generator
+# rizqiO.image.generator
