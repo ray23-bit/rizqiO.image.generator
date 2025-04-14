@@ -1,15 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Cah KENTHIR AI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Image Generator</title>
   <style>
     body {
       margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #1f1c2c, #928dab);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #800000, #00bfff);
       color: #fff;
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -17,193 +17,121 @@
     }
     h1 {
       margin-bottom: 1rem;
-      text-align: center;
     }
-    .container {
-      background: rgba(255, 255, 255, 0.08);
-      border-radius: 16px;
-      padding: 2rem;
-      max-width: 700px;
+    .generator {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 1.5rem;
+      border-radius: 1rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      max-width: 600px;
       width: 100%;
-      backdrop-filter: blur(10px);
     }
-    textarea, select, button {
+    textarea, select, input {
       width: 100%;
-      margin: 0.5rem 0;
       padding: 0.75rem;
-      font-size: 1rem;
+      margin: 0.5rem 0;
       border: none;
-      border-radius: 8px;
+      border-radius: 0.5rem;
+      font-size: 1rem;
     }
     button {
-      background-color: #4caf50;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      background: #6a11cb;
       color: white;
+      border: none;
+      border-radius: 0.5rem;
       cursor: pointer;
+      transition: background 0.3s;
     }
     button:hover {
-      background-color: #45a049;
+      background: #2575fc;
     }
-    .image-container {
+    .loading {
       margin-top: 1rem;
-      width: 100%;
-      display: flex;
-      justify-content: center;
+      font-weight: bold;
     }
-    #output {
-      display: none;
-      border-radius: 12px;
-      max-width: 100%;
-      object-fit: contain;
+    .images {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+      margin-top: 2rem;
+      width: 100%;
+    }
+    .image-card {
+      position: relative;
+    }
+    .image-card img {
+      width: 100%;
+      border-radius: 0.5rem;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
     }
     .download-btn {
-      background-color: #2196f3;
-      margin-top: 1rem;
-      display: none;
-      text-align: center;
-      padding: 0.75rem;
-      border-radius: 8px;
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      background: rgba(0,0,0,0.5);
+      color: #fff;
+      padding: 0.3rem 0.6rem;
+      border-radius: 0.3rem;
+      font-size: 0.8rem;
       text-decoration: none;
-      color: white;
-    }
-    .aspect-select {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-bottom: 1rem;
-    }
-    .aspect-select button {
-      flex: 1;
-      background: #333;
-      font-size: 0.9rem;
-    }
-    .row {
-      display: flex;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-    }
-    #loader {
-      display: none;
-      text-align: center;
-      margin-top: 1rem;
-    }
-    .loader-spinner {
-      border: 5px solid rgba(255, 255, 255, 0.3);
-      border-top: 5px solid #fff;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      animation: spin 1s linear infinite;
-      margin: auto;
-    }
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
     }
   </style>
 </head>
 <body>
-  <h1>Cah KENTHIR AI v2</h1>
-  <div class="container">
-    <textarea id="prompt" placeholder="Tulis deskripsi gambar..."></textarea>
-
-    <div class="row">
-      <select id="style">
-        <option value="">-- Pilih Gaya Seni --</option>
-      </select>
-      <select id="effect">
-        <option value="">-- Pilih Efek Visual --</option>
-      </select>
-    </div>
-
-    <div class="aspect-select">
-      <button onclick="setAspect('1024x1024')">1:1</button>
-      <button onclick="setAspect('1792x1024')">16:9</button>
-      <button onclick="setAspect('1024x1792')">9:16</button>
-    </div>
-
-    <button onclick="generateImage()">Generate Image</button>
-    <button onclick="resetAll()" style="background:#f44336;">Reset</button>
-
-    <div id="loader">
-      <div class="loader-spinner"></div>
-      <p>Generating your image...</p>
-    </div>
-
-    <div class="image-container">
-      <img id="output" src="" />
-    </div>
-
-    <a id="downloadLink" class="download-btn" download="generated-image.png">Download Image</a>
-  </div>
-
-  <script>
-    const styleOptions = [
-      "cyberpunk", "fantasy", "pixel art", "steampunk", "vaporwave", "realism", "gothic", "watercolor", "anime", "sketch",
-      "low poly", "3D render", "concept art", "line art", "retro", "digital painting", "surrealism", "futuristic", "dark art", "dreamy",
-      "baroque", "minimalist", "expressionism", "noir", "art nouveau", "vintage", "oil painting", "synthwave", "cartoon", "mystical"
-    ];
-
-    const effectOptions = [
-      "glow", "cinematic lighting", "neon light", "soft focus", "dramatic shadows", "motion blur", "bokeh", "depth of field", "grainy", "dream-like",
-      "pastel filter", "dark ambiance", "hazy", "color pop", "vignette", "lens flare", "ambient light", "rim light", "vibrant", "eerie"
-    ];
-
-    const styleSelect = document.getElementById("style");
-    const effectSelect = document.getElementById("effect");
-
-    styleOptions.forEach(style => {
-      const opt = document.createElement("option");
-      opt.value = style;
-      opt.textContent = style.charAt(0).toUpperCase() + style.slice(1);
-      styleSelect.appendChild(opt);
-    });
-
-    effectOptions.forEach(effect => {
-      const opt = document.createElement("option");
-      opt.value = effect;
-      opt.textContent = effect.charAt(0).toUpperCase() + effect.slice(1);
-      effectSelect.appendChild(opt);
-    });
-
-    let selectedAspect = '1024x1024';
-
-    function setAspect(size) {
-      selectedAspect = size;
-    }
-
-    function resetAll() {
-      document.getElementById('prompt').value = '';
-      document.getElementById('output').style.display = 'none';
-      document.getElementById('downloadLink').style.display = 'none';
-      document.getElementById('loader').style.display = 'none';
-    }
-
+  <h1>AI Image Generator</h1>
+  <div class="generator">
+    <textarea id="prompt" rows="3" placeholder="Enter image prompt..."></textarea>
+    <select id="model">
+      <option value="Stable Diffusion">Stable Diffusion</option>
+      <option value="DALL-E">DALL-E</option>
+      <option value="FLUX">FLUX</option>
+    </select>
+    <input type="number" id="width" placeholder="Width (512-1024)" min="512" max="1024" value="512" />
+    <input type="number" id="height" placeholder="Height (512-1024)" min="512" max="1024" value="512" />
+    <input type="number" id="steps" placeholder="Steps (20-100)" min="20" max="100" value="50" />
+    <button onclick="generateImage()">Generate</button>
+    <div class="loading" id="loading" style="display:none;">Generating image...</div>
+  </div>  <div class="images" id="imageGrid"></div>  <script>
     async function generateImage() {
-      const prompt = document.getElementById('prompt').value.trim();
-      const style = document.getElementById('style').value;
-      const effect = document.getElementById('effect').value;
+      const prompt = document.getElementById("prompt").value.trim();
+      const model = document.getElementById("model").value;
+      const width = document.getElementById("width").value;
+      const height = document.getElementById("height").value;
+      const steps = document.getElementById("steps").value;
+      const loading = document.getElementById("loading");
+      const imageGrid = document.getElementById("imageGrid");
 
-      if (!prompt) return alert("Masukkan deskripsi gambar!");
+      if (!prompt) return alert("Please enter a prompt.");
 
-      document.getElementById('loader').style.display = 'block';
-      document.getElementById('output').style.display = 'none';
-      document.getElementById('downloadLink').style.display = 'none';
+      loading.style.display = "block";
 
-      const finalPrompt = encodeURIComponent(`${prompt}, ${style}, ${effect}`);
-      const imgUrl = `https://image.pollinations.ai/prompt/${finalPrompt}?size=${selectedAspect}&watermark=false`;
+      const fullPrompt = `${prompt} | model: ${model}`;
+      const apiUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}?width=${width}&height=${height}&steps=${steps}`;
 
-      const output = document.getElementById('output');
-      output.src = imgUrl;
+      try {
+        const img = document.createElement("img");
+        img.src = apiUrl;
+        img.alt = prompt;
+        img.onload = () => loading.style.display = "none";
 
-      output.onload = () => {
-        document.getElementById('loader').style.display = 'none';
-        output.style.display = 'block';
+        const card = document.createElement("div");
+        card.className = "image-card";
+        const downloadLink = document.createElement("a");
+        downloadLink.href = apiUrl;
+        downloadLink.download = "generated-image.jpg";
+        downloadLink.textContent = "Download";
+        downloadLink.className = "download-btn";
 
-        const downloadLink = document.getElementById('downloadLink');
-        downloadLink.href = imgUrl;
-        downloadLink.style.display = 'inline-block';
-      };
+        card.appendChild(img);
+        card.appendChild(downloadLink);
+        imageGrid.prepend(card);
+      } catch (err) {
+        loading.style.display = "none";
+        alert("Failed to generate image. Please try again later.");
+        console.error(err);
+      }
     }
-  </script>
-</body>
+  </script></body>
 </html>
