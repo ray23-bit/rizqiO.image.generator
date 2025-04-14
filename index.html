@@ -67,7 +67,7 @@
       width: 100%;
       border-radius: 0.5rem;
       box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-      object-fit: cover;
+      object-fit: cover; /* Ensures image fits without stretching */
     }
     .download-btn {
       position: absolute;
@@ -120,13 +120,6 @@
       <option value="Effect 3">Effect 3</option>
       <!-- Add 100 effects here -->
     </select>
-    <select id="aspectRatio" onchange="setAspectRatio()">
-      <option value="1:1">1:1 (Square)</option>
-      <option value="9:16">9:16 (Portrait)</option>
-      <option value="16:9">16:9 (Landscape)</option>
-      <option value="4:3">4:3</option>
-      <option value="3:2">3:2</option>
-    </select>
     <input type="number" id="width" placeholder="Width (512-1024)" min="512" max="1024" value="512" />
     <input type="number" id="height" placeholder="Height (512-1024)" min="512" max="1024" value="512" />
     <input type="number" id="steps" placeholder="Steps (20-100)" min="20" max="100" value="50" />
@@ -138,33 +131,6 @@
   <div class="images" id="imageGrid"></div>
 
   <script>
-    function setAspectRatio() {
-      const aspectRatio = document.getElementById("aspectRatio").value;
-      const widthInput = document.getElementById("width");
-      const heightInput = document.getElementById("height");
-
-      let width, height;
-      if (aspectRatio === "1:1") {
-        width = 512;
-        height = 512;
-      } else if (aspectRatio === "9:16") {
-        width = 512;
-        height = 912;
-      } else if (aspectRatio === "16:9") {
-        width = 912;
-        height = 512;
-      } else if (aspectRatio === "4:3") {
-        width = 512;
-        height = 384;
-      } else if (aspectRatio === "3:2") {
-        width = 512;
-        height = 341;
-      }
-
-      widthInput.value = width;
-      heightInput.value = height;
-    }
-
     async function generateImage() {
       const prompt = document.getElementById("prompt").value.trim();
       const model = document.getElementById("model").value;
