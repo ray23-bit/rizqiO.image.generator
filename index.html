@@ -2,365 +2,508 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI Image Generator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>RIZQI O AI - Advanced Image Generator</title>
   <style>
     :root {
-      --primary-color: #6a11cb;
-      --secondary-color: #2575fc;
-      --background-gradient: linear-gradient(135deg, #0f52ba, #a1c4fd);
-      --card-bg: rgba(255, 255, 255, 0.1);
-      --text-color: #fff;
-      --border-radius: 0.5rem;
-      --box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      --primary-color: #800020; /* Maroon red */
+      --secondary-color: #4a0c25;
+      --accent-color: #ff6b6b;
     }
-    
-    * {
-      box-sizing: border-box;
-    }
-    
+
     body {
       margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: var(--background-gradient);
-      color: var(--text-color);
-      min-height: 100vh;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, var(--secondary-color), var(--primary-color)),
+                  url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23800020" opacity="0.2"/><path d="M0 0 L100 100 M100 0 L0 100" stroke="%23ff6b6b" stroke-width="1" opacity="0.1"/></svg>');
+      color: #fff;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 1rem;
-    }
-    
-    h1 {
-      margin: 1rem 0;
-      text-align: center;
-      font-size: clamp(1.5rem, 4vw, 2.5rem);
-    }
-    
-    .generator-container {
-      width: 100%;
-      max-width: 1200px;
-      padding: 0 1rem;
-    }
-    
-    .generator {
-      background: var(--card-bg);
-      padding: 1.5rem;
-      border-radius: var(--border-radius);
-      box-shadow: var(--box-shadow);
-      width: 100%;
-      max-width: 600px;
-      margin: 0 auto;
+      min-height: 100vh;
+      padding: 2rem;
       position: relative;
+      overflow-x: hidden;
     }
-    
-    .form-group {
-      margin-bottom: 1rem;
-    }
-    
-    label {
-      display: block;
-      margin-bottom: 0.3rem;
-      font-weight: 500;
-    }
-    
-    textarea, select, input {
-      width: 100%;
-      padding: 0.75rem;
-      margin: 0.3rem 0;
-      border: none;
-      border-radius: var(--border-radius);
-      font-size: 1rem;
-      background: rgba(255, 255, 255, 0.2);
-      color: var(--text-color);
-      transition: background 0.3s, box-shadow 0.3s;
-    }
-    
-    textarea:focus, select:focus, input:focus {
-      outline: none;
-      background: rgba(255, 255, 255, 0.3);
-      box-shadow: 0 0 0 2px rgba(106, 17, 203, 0.5);
-    }
-    
-    textarea::placeholder, input::placeholder {
-      color: rgba(255, 255, 255, 0.7);
-    }
-    
-    button {
-      padding: 0.75rem 1.5rem;
-      font-size: 1rem;
-      font-weight: 600;
-      background: var(--primary-color);
-      color: white;
-      border: none;
-      border-radius: var(--border-radius);
-      cursor: pointer;
-      transition: all 0.3s;
-      width: 100%;
-      margin-top: 0.5rem;
-    }
-    
-    button:hover {
-      background: var(--secondary-color);
-      transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    }
-    
-    button:active {
-      transform: translateY(0);
-    }
-    
-    .loading {
-      margin-top: 1rem;
-      font-weight: bold;
-      color: var(--text-color);
-      text-align: center;
-      display: none;
-    }
-    
-    .images {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 1.5rem;
-      margin: 2rem 0;
-      width: 100%;
-      max-width: 1200px;
-      padding: 0 1rem;
-    }
-    
-    .image-card {
-      position: relative;
-      border-radius: var(--border-radius);
-      overflow: hidden;
-      aspect-ratio: 1/1;
-      background: rgba(0,0,0,0.1);
-    }
-    
-    .image-card img {
-      width: 100%;
-      height: 100%;
-      border-radius: var(--border-radius);
-      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-      object-fit: cover;
-      transition: transform 0.3s;
-    }
-    
-    .image-card:hover img {
-      transform: scale(1.03);
-    }
-    
-    .download-btn {
-      position: absolute;
-      bottom: 10px;
-      right: 10px;
-      background: rgba(0,0,0,0.7);
-      color: #fff;
-      padding: 0.5rem 1rem;
-      border-radius: var(--border-radius);
-      font-size: 0.9rem;
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      gap: 0.3rem;
-      transition: all 0.3s;
-    }
-    
-    .download-btn:hover {
-      background: rgba(0,0,0,0.9);
-      transform: translateY(-2px);
-    }
-    
-    .loading-animation {
-      display: none;
-      position: absolute;
+
+    body::before {
+      content: "RIZQI O AI";
+      position: fixed;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      border: 4px solid rgba(255, 255, 255, 0.3);
-      border-top: 4px solid var(--primary-color);
+      font-size: 20vw;
+      font-weight: 900;
+      color: var(--primary-color);
+      opacity: 0.1;
+      z-index: -1;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    h1 {
+      margin-bottom: 1rem;
+      text-align: center;
+      color: white;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      position: relative;
+    }
+
+    h1::after {
+      content: "";
+      display: block;
+      width: 100px;
+      height: 4px;
+      background: var(--accent-color);
+      margin: 0.5rem auto;
+      border-radius: 2px;
+    }
+
+    .container {
+      background: rgba(0, 0, 0, 0.7);
+      border-radius: 16px;
+      padding: 2rem;
+      max-width: 900px;
+      width: 100%;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    textarea, select, button {
+      width: 100%;
+      margin: 0.5rem 0;
+      padding: 0.75rem;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      transition: all 0.3s ease;
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    textarea:focus, select:focus {
+      outline: 2px solid var(--accent-color);
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    button {
+      background-color: var(--accent-color);
+      color: white;
+      cursor: pointer;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    button:hover {
+      background-color: #ff5252;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .image-container {
+      margin-top: 1.5rem;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      min-height: 300px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    #output {
+      display: none;
+      border-radius: 12px;
+      max-width: 100%;
+      max-height: 70vh;
+      object-fit: contain;
+      transition: opacity 0.3s ease;
+    }
+
+    .download-btn {
+      background-color: var(--primary-color);
+      margin-top: 1rem;
+      display: none;
+      text-align: center;
+      text-decoration: none;
+      padding: 0.75rem;
+      border-radius: 8px;
+      color: white;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .download-btn:hover {
+      background-color: #6a001b;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .aspect-select {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .aspect-select button {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.1);
+      font-size: 0.9rem;
+      padding: 0.5rem;
+      min-width: 60px;
+    }
+
+    .aspect-select button.active {
+      background: var(--accent-color);
+      font-weight: bold;
+    }
+
+    .row {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .row > * {
+      flex: 1;
+      min-width: 150px;
+    }
+
+    #loader {
+      display: none;
+      text-align: center;
+      margin-top: 1rem;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .loader-spinner {
+      border: 5px solid rgba(255, 255, 255, 0.3);
+      border-top: 5px solid var(--accent-color);
       border-radius: 50%;
-      width: 50px;
-      height: 50px;
+      width: 40px;
+      height: 40px;
       animation: spin 1s linear infinite;
-      z-index: 10;
+      margin: 1rem auto;
     }
-    
+
+    .quality-selector {
+      display: flex;
+      gap: 0.5rem;
+      margin: 1rem 0;
+    }
+
+    .quality-selector button {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .quality-selector button.active {
+      background: var(--accent-color);
+    }
+
     @keyframes spin {
-      0% { transform: translate(-50%, -50%) rotate(0deg); }
-      100% { transform: translate(-50%, -50%) rotate(360deg); }
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
-    
+
+    /* Tooltip styles */
+    .tooltip {
+      position: relative;
+      display: inline-block;
+    }
+
+    .tooltip .tooltiptext {
+      visibility: hidden;
+      width: 200px;
+      background-color: #333;
+      color: #fff;
+      text-align: center;
+      border-radius: 6px;
+      padding: 5px;
+      position: absolute;
+      z-index: 1;
+      bottom: 125%;
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0;
+      transition: opacity 0.3s;
+      font-size: 0.8rem;
+    }
+
+    .tooltip:hover .tooltiptext {
+      visibility: visible;
+      opacity: 1;
+    }
+
     /* Responsive adjustments */
     @media (max-width: 768px) {
-      .generator {
+      .container {
         padding: 1rem;
       }
       
-      .images {
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1rem;
-      }
-    }
-    
-    @media (max-width: 480px) {
-      body {
-        padding: 0.5rem;
+      .row {
+        flex-direction: column;
+        gap: 0.5rem;
       }
       
-      .generator {
-        padding: 0.75rem;
-      }
-      
-      textarea, select, input {
-        padding: 0.6rem;
-      }
-      
-      button {
-        padding: 0.6rem;
-      }
-      
-      .images {
-        grid-template-columns: 1fr;
+      .aspect-select button {
+        min-width: 40px;
+        font-size: 0.8rem;
+        padding: 0.3rem;
       }
     }
   </style>
 </head>
 <body>
-  <div class="generator-container">
-    <h1>AI Image Generator</h1>
-    <div class="generator">
-      <div class="form-group">
-        <label for="prompt">Image Prompt</label>
-        <textarea id="prompt" rows="3" placeholder="Describe the image you want to generate..."></textarea>
-      </div>
-      
-      <div class="form-group">
-        <label for="model">AI Model</label>
-        <select id="model">
-          <option value="Stable Diffusion">Stable Diffusion</option>
-          <option value="DALL-E">DALL-E</option>
-          <option value="FLUX">FLUX</option>
-        </select>
-      </div>
-      
-      <div class="form-group">
-        <label for="style">Style</label>
+  <h1>RIZQI O AI - Advanced Image Generator</h1>
+  <div class="container">
+    <textarea id="prompt" placeholder="Describe the image you want to generate... Be as detailed as possible for best results."></textarea>
+
+    <div class="row">
+      <div class="tooltip">
         <select id="style">
-          <option value="Digital Art">Digital Art</option>
-          <option value="Photorealistic">Photorealistic</option>
-          <option value="Painting">Painting</option>
-          <option value="3D Render">3D Render</option>
+          <option value="">-- Art Style --</option>
+          <option value="Abstract Expressionism">Abstract Expressionism</option>
           <option value="Anime">Anime</option>
+          <option value="Art Deco">Art Deco</option>
+          <option value="Art Nouveau">Art Nouveau</option>
+          <option value="Baroque">Baroque</option>
+          <option value="Bauhaus">Bauhaus</option>
+          <option value="Cyberpunk">Cyberpunk</option>
+          <option value="Cubism">Cubism</option>
+          <option value="Dadaism">Dadaism</option>
+          <option value="Digital Painting">Digital Painting</option>
+          <option value="Expressionism">Expressionism</option>
+          <option value="Fantasy">Fantasy</option>
+          <option value="Futurism">Futurism</option>
+          <option value="Gothic">Gothic</option>
+          <option value="Graffiti">Graffiti</option>
+          <option value="Hyperrealism">Hyperrealism</option>
+          <option value="Impressionism">Impressionism</option>
+          <option value="Low Poly">Low Poly</option>
+          <option value="Minimalism">Minimalism</option>
+          <option value="Pixel Art">Pixel Art</option>
+          <option value="Pop Art">Pop Art</option>
+          <option value="Realism">Realism</option>
+          <option value="Renaissance">Renaissance</option>
+          <option value="Retro">Retro</option>
+          <option value="Steampunk">Steampunk</option>
+          <option value="Surrealism">Surrealism</option>
+          <option value="Ukiyo-e">Ukiyo-e</option>
+          <option value="Vaporwave">Vaporwave</option>
+          <option value="Watercolor">Watercolor</option>
         </select>
+        <span class="tooltiptext">Select an art style for your image</span>
       </div>
-      
-      <div class="form-group">
-        <label for="effect">Effect</label>
+
+      <div class="tooltip">
         <select id="effect">
-          <option value="None">None</option>
-          <option value="Vibrant Colors">Vibrant Colors</option>
-          <option value="Soft Focus">Soft Focus</option>
-          <option value="Cinematic">Cinematic</option>
+          <option value="">-- Special Effect --</option>
+          <option value="8K resolution">8K Resolution</option>
+          <option value="Bokeh">Bokeh</option>
+          <option value="Chiaroscuro">Chiaroscuro</option>
+          <option value="Cinematic lighting">Cinematic Lighting</option>
+          <option value="Dramatic shadows">Dramatic Shadows</option>
+          <option value="Duotone">Duotone</option>
+          <option value="Film grain">Film Grain</option>
+          <option value="Glow">Glow</option>
           <option value="HDR">HDR</option>
+          <option value="Lens flare">Lens Flare</option>
+          <option value="Long exposure">Long Exposure</option>
+          <option value="Macro">Macro</option>
+          <option value="Motion blur">Motion Blur</option>
+          <option value="Neon light">Neon Light</option>
+          <option value="Panoramic">Panoramic</option>
+          <option value="Silhouette">Silhouette</option>
+          <option value="Soft focus">Soft Focus</option>
+          <option value="Tilt-shift">Tilt-Shift</option>
+          <option value="Vignette">Vignette</option>
+          <option value="Volumetric lighting">Volumetric Lighting</option>
         </select>
+        <span class="tooltiptext">Add special effects to your image</span>
       </div>
-      
-      <div class="form-group">
-        <label for="width">Width (512-1024)</label>
-        <input type="number" id="width" min="512" max="1024" value="512" />
-      </div>
-      
-      <div class="form-group">
-        <label for="height">Height (512-1024)</label>
-        <input type="number" id="height" min="512" max="1024" value="512" />
-      </div>
-      
-      <div class="form-group">
-        <label for="steps">Steps (20-100)</label>
-        <input type="number" id="steps" min="20" max="100" value="50" />
-      </div>
-      
-      <button onclick="generateImage()">Generate Image</button>
-      <div class="loading" id="loading">Generating image...</div>
-      <div class="loading-animation" id="loadingAnimation"></div>
     </div>
+
+    <div class="quality-selector">
+      <button onclick="setQuality('standard')" class="active">Standard</button>
+      <button onclick="setQuality('hd')">High Quality</button>
+      <button onclick="setQuality('ultra')">Ultra Quality</button>
+    </div>
+
+    <div class="aspect-select">
+      <button onclick="setAspect('1:1')" class="active">Square (1:1)</button>
+      <button onclick="setAspect('16:9')">Widescreen (16:9)</button>
+      <button onclick="setAspect('9:16')">Portrait (9:16)</button>
+      <button onclick="setAspect('4:3')">Standard (4:3)</button>
+      <button onclick="setAspect('3:2')">Classic (3:2)</button>
+      <button onclick="setAspect('2:3')">Tall (2:3)</button>
+      <button onclick="setAspect('21:9')">Cinematic (21:9)</button>
+      <button onclick="setAspect('9:21')">Ultra Tall (9:21)</button>
+    </div>
+
+    <button onclick="generateImage()">Generate Image</button>
+    <button onclick="resetAll()" style="background:#6a001b;">Reset All</button>
+
+    <div id="loader">
+      <div class="loader-spinner"></div>
+      <p>Generating your masterpiece...</p>
+    </div>
+
+    <div class="image-container">
+      <img id="output" src="" alt="Generated image will appear here"/>
+    </div>
+
+    <a id="downloadLink" class="download-btn" download="rizqio-ai-image.png">Download Image</a>
   </div>
 
-  <div class="images" id="imageGrid"></div>
-
   <script>
+    // Configuration
+    const config = {
+      selectedAspect: "1:1",
+      selectedQuality: "standard",
+      apiEndpoint: "https://image.pollinations.ai/prompt/"
+    };
+
+    // Aspect ratio mapping with more options
+    const aspectMap = {
+      "1:1": { size: "1024x1024", ratio: "1 / 1" },
+      "16:9": { size: "1792x1024", ratio: "16 / 9" },
+      "9:16": { size: "1024x1792", ratio: "9 / 16" },
+      "4:3": { size: "1366x1024", ratio: "4 / 3" },
+      "3:2": { size: "1536x1024", ratio: "3 / 2" },
+      "2:3": { size: "1024x1536", ratio: "2 / 3" },
+      "21:9": { size: "2048x1024", ratio: "2 / 1" },
+      "9:21": { size: "1024x2048", ratio: "1 / 2" }
+    };
+
+    // Quality settings
+    const qualitySettings = {
+      "standard": "",
+      "hd": "high details, 8K resolution, ",
+      "ultra": "ultra detailed, 16K resolution, professional photography, "
+    };
+
+    // Set aspect ratio
+    function setAspect(ratio) {
+      config.selectedAspect = ratio;
+      // Update active button
+      document.querySelectorAll('.aspect-select button').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.textContent.includes(ratio)) {
+          btn.classList.add('active');
+        }
+      });
+    }
+
+    // Set quality level
+    function setQuality(level) {
+      config.selectedQuality = level;
+      // Update active button
+      document.querySelectorAll('.quality-selector button').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.textContent.toLowerCase().includes(level)) {
+          btn.classList.add('active');
+        }
+      });
+    }
+
+    // Reset all fields
+    function resetAll() {
+      document.getElementById('prompt').value = '';
+      document.getElementById('style').value = '';
+      document.getElementById('effect').value = '';
+      document.getElementById('output').style.display = 'none';
+      document.getElementById('downloadLink').style.display = 'none';
+      document.getElementById('loader').style.display = 'none';
+      
+      // Reset to defaults
+      setAspect('1:1');
+      setQuality('standard');
+    }
+
+    // Generate the image
     async function generateImage() {
-      const prompt = document.getElementById("prompt").value.trim();
-      const model = document.getElementById("model").value;
-      const style = document.getElementById("style").value;
-      const effect = document.getElementById("effect").value;
-      const width = document.getElementById("width").value;
-      const height = document.getElementById("height").value;
-      const steps = document.getElementById("steps").value;
-      const loading = document.getElementById("loading");
-      const loadingAnimation = document.getElementById("loadingAnimation");
-      const imageGrid = document.getElementById("imageGrid");
+      const promptText = document.getElementById('prompt').value.trim();
+      const style = document.getElementById('style').value;
+      const effect = document.getElementById('effect').value;
 
-      if (!prompt) {
-        alert("Please enter a prompt.");
+      if (!promptText) {
+        alert("Please enter a detailed prompt for best results");
         return;
       }
 
-      // Validate dimensions
-      if (width < 512 || width > 1024 || height < 512 || height > 1024) {
-        alert("Width and height must be between 512 and 1024.");
-        return;
-      }
+      const { size, ratio } = aspectMap[config.selectedAspect] || aspectMap["1:1"];
+      const qualityPrompt = qualitySettings[config.selectedQuality] || "";
+      
+      // Build the full prompt
+      let fullPrompt = `${qualityPrompt}${promptText}`;
+      if (style) fullPrompt += `, ${style} style`;
+      if (effect) fullPrompt += `, ${effect}`;
+      
+      // Clean up prompt (remove double commas)
+      fullPrompt = fullPrompt.replace(/,\s*,/g, ',').trim();
 
-      loading.style.display = "block";
-      loadingAnimation.style.display = "block";
+      const loader = document.getElementById("loader");
+      const output = document.getElementById("output");
+      const downloadLink = document.getElementById("downloadLink");
 
-      const fullPrompt = `${prompt} | model: ${model} | style: ${style} | effect: ${effect}`;
-      const apiUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}?width=${width}&height=${height}&steps=${steps}`;
+      // Show loader and hide previous results
+      loader.style.display = 'flex';
+      output.style.display = 'none';
+      downloadLink.style.display = 'none';
 
       try {
-        const img = new Image();
-        img.src = apiUrl;
-        img.alt = prompt;
+        // Encode the prompt for URL
+        const encodedPrompt = encodeURIComponent(fullPrompt);
         
-        const card = document.createElement("div");
-        card.className = "image-card";
+        // Create a unique timestamp to prevent caching
+        const timestamp = new Date().getTime();
         
-        const downloadLink = document.createElement("a");
-        downloadLink.href = apiUrl;
-        downloadLink.download = `ai-image-${Date.now()}.jpg`;
-        downloadLink.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/><path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/></svg> Download';
-        downloadLink.className = "download-btn";
+        // Construct the API URL
+        const apiUrl = `${config.apiEndpoint}${encodedPrompt}?size=${size}&timestamp=${timestamp}`;
+        
+        // Fetch the image
+        const response = await fetch(apiUrl);
+        
+        if (!response.ok) {
+          throw new Error(`API request failed with status ${response.status}`);
+        }
+        
+        // Get the image blob
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
 
-        img.onload = () => {
-          loading.style.display = "none";
-          loadingAnimation.style.display = "none";
-          card.appendChild(img);
-          card.appendChild(downloadLink);
-          imageGrid.prepend(card);
-        };
+        // Display the image
+        output.src = url;
+        output.style.display = 'block';
+        output.style.aspectRatio = ratio;
 
-        img.onerror = () => {
-          loading.style.display = "none";
-          loadingAnimation.style.display = "none";
-          alert("Failed to generate image. Please try a different prompt or check your connection.");
-        };
+        // Set up download link
+        downloadLink.href = url;
+        downloadLink.download = `rizqio-ai-${Date.now()}.png`;
+        downloadLink.style.display = 'inline-block';
+        
       } catch (err) {
-        loading.style.display = "none";
-        loadingAnimation.style.display = "none";
-        alert("An error occurred. Please try again later.");
         console.error("Image generation error:", err);
+        alert("Failed to generate image. Please try again with a different prompt.");
+      } finally {
+        loader.style.display = 'none';
       }
     }
-    
-    // Allow form submission with Enter key
-    document.getElementById("prompt").addEventListener("keydown", function(e) {
-      if (e.key === "Enter" && !e.shiftKey) {
-        e.preventDefault();
-        generateImage();
-      }
-    });
+
+    // Initialize default settings
+    setAspect('1:1');
+    setQuality('standard');
   </script>
 </body>
 </html>
-    
