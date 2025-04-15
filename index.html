@@ -2,846 +2,365 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>RIZQI O AI - Premium Image Generator</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rizqi O AI Image Generator</title>
   <style>
     :root {
-      --primary: #800020; /* Maroon red */
-      --primary-dark: #5a0018;
-      --primary-light: #a3002a;
-      --secondary: #1a1a2e;
-      --accent: #ff6b6b;
-      --accent-dark: #e05a5a;
-      --text: #f8f9fa;
-      --text-muted: #adb5bd;
-      --bg-dark: #0d0d15;
-      --bg-darker: #08080f;
-      --success: #28a745;
-      --info: #17a2b8;
-      --warning: #ffc107;
-      --danger: #dc3545;
+      --primary-color: #6a11cb;
+      --secondary-color: #2575fc;
+      --background-gradient: linear-gradient(135deg, #0f52ba, #a1c4fd);
+      --card-bg: rgba(255, 255, 255, 0.1);
+      --text-color: #fff;
+      --border-radius: 0.5rem;
+      --box-shadow: 0 4px 20px rgba(0,0,0,0.2);
     }
-
+    
     * {
       box-sizing: border-box;
-      margin: 0;
-      padding: 0;
     }
-
+    
     body {
-      font-family: 'Segoe UI', 'Roboto', system-ui, -apple-system, sans-serif;
-      background: var(--bg-darker);
-      color: var(--text);
-      line-height: 1.6;
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--background-gradient);
+      color: var(--text-color);
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
-      min-height: 100vh;
+      align-items: center;
       padding: 1rem;
-      position: relative;
-      overflow-x: hidden;
     }
-
-    body::before {
-      content: "RIZQI O AI";
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: clamp(10rem, 30vw, 30rem);
-      font-weight: 900;
-      color: var(--primary);
-      opacity: 0.03;
-      z-index: -1;
-      pointer-events: none;
-      white-space: nowrap;
-      font-style: italic;
-    }
-
-    .header {
+    
+    h1 {
+      margin: 1rem 0;
       text-align: center;
-      margin-bottom: 2rem;
-      position: relative;
+      font-size: clamp(1.5rem, 4vw, 2.5rem);
     }
-
-    .header h1 {
-      font-size: clamp(1.8rem, 5vw, 2.5rem);
-      margin-bottom: 0.5rem;
-      background: linear-gradient(90deg, var(--accent), var(--primary));
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      font-weight: 800;
-    }
-
-    .header p {
-      color: var(--text-muted);
-      font-size: clamp(0.9rem, 3vw, 1.1rem);
-      max-width: 700px;
-      margin: 0 auto;
-    }
-
-    .container {
-      background: rgba(13, 13, 21, 0.8);
-      border-radius: 16px;
-      padding: clamp(1rem, 3vw, 2rem);
+    
+    .generator-container {
       width: 100%;
       max-width: 1200px;
-      margin: 0 auto;
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+      padding: 0 1rem;
     }
-
-    .panel {
-      background: rgba(20, 20, 35, 0.6);
-      border-radius: 12px;
+    
+    .generator {
+      background: var(--card-bg);
       padding: 1.5rem;
-      margin-bottom: 1.5rem;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-    }
-
-    .panel-title {
-      font-size: 1.2rem;
-      margin-bottom: 1rem;
-      color: var(--accent);
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    textarea, select {
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
       width: 100%;
-      padding: 1rem;
+      max-width: 600px;
+      margin: 0 auto;
+      position: relative;
+    }
+    
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 0.3rem;
+      font-weight: 500;
+    }
+    
+    textarea, select, input {
+      width: 100%;
+      padding: 0.75rem;
+      margin: 0.3rem 0;
+      border: none;
+      border-radius: var(--border-radius);
       font-size: 1rem;
-      border-radius: 8px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      background: rgba(10, 10, 20, 0.8);
-      color: var(--text);
-      transition: all 0.3s ease;
-      resize: vertical;
+      background: rgba(255, 255, 255, 0.2);
+      color: var(--text-color);
+      transition: background 0.3s, box-shadow 0.3s;
     }
-
-    textarea {
-      min-height: 120px;
-    }
-
-    textarea:focus, select:focus {
+    
+    textarea:focus, select:focus, input:focus {
       outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 2px rgba(128, 0, 32, 0.3);
-      background: rgba(15, 15, 25, 0.9);
+      background: rgba(255, 255, 255, 0.3);
+      box-shadow: 0 0 0 2px rgba(106, 17, 203, 0.5);
     }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0.8rem 1.5rem;
+    
+    textarea::placeholder, input::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+    }
+    
+    button {
+      padding: 0.75rem 1.5rem;
       font-size: 1rem;
       font-weight: 600;
-      border-radius: 8px;
+      background: var(--primary-color);
+      color: white;
       border: none;
+      border-radius: var(--border-radius);
       cursor: pointer;
-      transition: all 0.3s ease;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      gap: 0.5rem;
+      transition: all 0.3s;
+      width: 100%;
+      margin-top: 0.5rem;
     }
-
-    .btn-primary {
-      background: var(--primary);
-      color: white;
-    }
-
-    .btn-primary:hover {
-      background: var(--primary-light);
+    
+    button:hover {
+      background: var(--secondary-color);
       transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(128, 0, 32, 0.3);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     }
-
-    .btn-secondary {
-      background: rgba(255, 255, 255, 0.1);
-      color: white;
+    
+    button:active {
+      transform: translateY(0);
     }
-
-    .btn-secondary:hover {
-      background: rgba(255, 255, 255, 0.2);
-    }
-
-    .btn-danger {
-      background: var(--danger);
-      color: white;
-    }
-
-    .btn-danger:hover {
-      background: #c82333;
-    }
-
-    .btn-sm {
-      padding: 0.5rem 1rem;
-      font-size: 0.9rem;
-    }
-
-    .btn.active {
-      background: var(--primary);
-      color: white;
-      box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
-    }
-
-    .grid {
-      display: grid;
-      gap: 0.75rem;
-    }
-
-    .grid-cols-2 {
-      grid-template-columns: repeat(2, 1fr);
-    }
-
-    .grid-cols-3 {
-      grid-template-columns: repeat(3, 1fr);
-    }
-
-    .grid-cols-4 {
-      grid-template-columns: repeat(4, 1fr);
-    }
-
-    .grid-cols-5 {
-      grid-template-columns: repeat(5, 1fr);
-    }
-
-    .grid-cols-6 {
-      grid-template-columns: repeat(6, 1fr);
-    }
-
-    .flex {
-      display: flex;
-    }
-
-    .flex-col {
-      flex-direction: column;
-    }
-
-    .items-center {
-      align-items: center;
-    }
-
-    .justify-center {
-      justify-content: center;
-    }
-
-    .gap-2 {
-      gap: 0.5rem;
-    }
-
-    .gap-3 {
-      gap: 1rem;
-    }
-
-    .gap-4 {
-      gap: 1.5rem;
-    }
-
-    .w-full {
-      width: 100%;
-    }
-
-    .mt-3 {
+    
+    .loading {
       margin-top: 1rem;
-    }
-
-    .mt-4 {
-      margin-top: 1.5rem;
-    }
-
-    .mb-2 {
-      margin-bottom: 0.5rem;
-    }
-
-    .mb-3 {
-      margin-bottom: 1rem;
-    }
-
-    .text-center {
+      font-weight: bold;
+      color: var(--text-color);
       text-align: center;
+      display: none;
     }
-
-    .image-container {
+    
+    .images {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin: 2rem 0;
       width: 100%;
-      min-height: 300px;
-      background: rgba(0, 0, 0, 0.3);
-      border-radius: 12px;
-      overflow: hidden;
+      max-width: 1200px;
+      padding: 0 1rem;
+    }
+    
+    .image-card {
       position: relative;
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      aspect-ratio: 1/1;
+      background: rgba(0,0,0,0.1);
+    }
+    
+    .image-card img {
+      width: 100%;
+      height: 100%;
+      border-radius: var(--border-radius);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      object-fit: cover;
+      transition: transform 0.3s;
+    }
+    
+    .image-card:hover img {
+      transform: scale(1.03);
+    }
+    
+    .download-btn {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      background: rgba(0,0,0,0.7);
+      color: #fff;
+      padding: 0.5rem 1rem;
+      border-radius: var(--border-radius);
+      font-size: 0.9rem;
+      text-decoration: none;
       display: flex;
       align-items: center;
-      justify-content: center;
+      gap: 0.3rem;
+      transition: all 0.3s;
     }
-
-    #output {
-      max-width: 100%;
-      max-height: 70vh;
-      object-fit: contain;
+    
+    .download-btn:hover {
+      background: rgba(0,0,0,0.9);
+      transform: translateY(-2px);
+    }
+    
+    .loading-animation {
       display: none;
-      border-radius: 8px;
-    }
-
-    #output.loaded {
-      display: block;
-      animation: fadeIn 0.5s ease;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
-    .download-btn {
-      display: none;
-      text-decoration: none;
-    }
-
-    #loader {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      gap: 1rem;
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      z-index: 10;
-    }
-
-    .loader-spinner {
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      border-top: 4px solid var(--primary-color);
+      border-radius: 50%;
       width: 50px;
       height: 50px;
-      border: 4px solid rgba(255, 255, 255, 0.1);
-      border-top: 4px solid var(--accent);
-      border-radius: 50%;
       animation: spin 1s linear infinite;
+      z-index: 10;
     }
-
-    .loader-text {
-      color: var(--text-muted);
-      font-size: 1.1rem;
+    
+    @keyframes spin {
+      0% { transform: translate(-50%, -50%) rotate(0deg); }
+      100% { transform: translate(-50%, -50%) rotate(360deg); }
     }
-
-    .placeholder {
-      color: var(--text-muted);
-      text-align: center;
-      padding: 2rem;
-    }
-
-    .placeholder i {
-      font-size: 3rem;
-      margin-bottom: 1rem;
-      opacity: 0.5;
-    }
-
-    .badge {
-      display: inline-block;
-      padding: 0.25rem 0.5rem;
-      font-size: 0.75rem;
-      border-radius: 4px;
-      background: rgba(255, 255, 255, 0.1);
-      color: var(--text-muted);
-    }
-
-    .tooltip {
-      position: relative;
-    }
-
-    .tooltip .tooltiptext {
-      visibility: hidden;
-      width: 200px;
-      background-color: rgba(0, 0, 0, 0.9);
-      color: #fff;
-      text-align: center;
-      border-radius: 6px;
-      padding: 0.5rem;
-      position: absolute;
-      z-index: 1;
-      bottom: 125%;
-      left: 50%;
-      transform: translateX(-50%);
-      opacity: 0;
-      transition: opacity 0.3s;
-      font-size: 0.8rem;
-      pointer-events: none;
-    }
-
-    .tooltip:hover .tooltiptext {
-      visibility: visible;
-      opacity: 1;
-    }
-
+    
     /* Responsive adjustments */
-    @media (max-width: 1024px) {
-      .grid-cols-6, .grid-cols-5 {
-        grid-template-columns: repeat(4, 1fr);
-      }
-    }
-
     @media (max-width: 768px) {
-      .grid-cols-6, .grid-cols-5, .grid-cols-4 {
-        grid-template-columns: repeat(3, 1fr);
-      }
-      
-      .panel {
+      .generator {
         padding: 1rem;
       }
-    }
-
-    @media (max-width: 576px) {
-      .grid-cols-6, .grid-cols-5, .grid-cols-4, .grid-cols-3 {
-        grid-template-columns: repeat(2, 1fr);
-      }
       
+      .images {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+      }
+    }
+    
+    @media (max-width: 480px) {
       body {
         padding: 0.5rem;
       }
       
-      .container {
-        padding: 1rem;
-        border-radius: 12px;
+      .generator {
+        padding: 0.75rem;
       }
       
-      .btn {
-        padding: 0.7rem 1rem;
-        font-size: 0.9rem;
+      textarea, select, input {
+        padding: 0.6rem;
       }
-    }
-
-    @media (max-width: 400px) {
-      .grid-cols-6, .grid-cols-5, .grid-cols-4, .grid-cols-3, .grid-cols-2 {
+      
+      button {
+        padding: 0.6rem;
+      }
+      
+      .images {
         grid-template-columns: 1fr;
       }
-    }
-
-    /* Floating action button */
-    .fab {
-      position: fixed;
-      bottom: 2rem;
-      right: 2rem;
-      width: 56px;
-      height: 56px;
-      border-radius: 50%;
-      background: var(--primary);
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-      cursor: pointer;
-      z-index: 100;
-      transition: all 0.3s ease;
-    }
-
-    .fab:hover {
-      transform: translateY(-3px) scale(1.05);
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
-    }
-
-    /* Progress bar */
-    .progress-container {
-      width: 100%;
-      height: 6px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 3px;
-      margin-top: 1rem;
-      overflow: hidden;
-      display: none;
-    }
-
-    .progress-bar {
-      height: 100%;
-      background: var(--primary);
-      width: 0%;
-      transition: width 0.3s ease;
     }
   </style>
 </head>
 <body>
-  <div class="header">
-    <h1>RIZQI O AI IMAGE GENERATOR</h1>
-    <p>Create stunning AI-generated artwork with advanced control and no watermarks</p>
-  </div>
-
-  <div class="container">
-    <div class="panel">
-      <div class="panel-title">
-        <i class="fas fa-magic"></i>
-        <span>Prompt Configuration</span>
-      </div>
-      <textarea id="prompt" placeholder="Describe your image in detail... Example: 'A majestic lion with a golden mane standing on a cliff at sunset, hyper-realistic 8K wildlife photography with dramatic lighting'"></textarea>
-    </div>
-
-    <div class="panel">
-      <div class="panel-title">
-        <i class="fas fa-palette"></i>
-        <span>Art Style</span>
-      </div>
-      <div class="grid grid-cols-3 gap-3">
-        <button onclick="setStyle('Realism')" class="btn btn-secondary active">
-          <i class="fas fa-eye"></i> Realism
-        </button>
-        <button onclick="setStyle('Anime')" class="btn btn-secondary">
-          <i class="fas fa-gamepad"></i> Anime
-        </button>
-        <button onclick="setStyle('Cyberpunk')" class="btn btn-secondary">
-          <i class="fas fa-city"></i> Cyberpunk
-        </button>
-        <button onclick="setStyle('Fantasy')" class="btn btn-secondary">
-          <i class="fas fa-dragon"></i> Fantasy
-        </button>
-        <button onclick="setStyle('Watercolor')" class="btn btn-secondary">
-          <i class="fas fa-paint-brush"></i> Watercolor
-        </button>
-        <button onclick="showAllStyles()" class="btn btn-secondary">
-          <i class="fas fa-ellipsis-h"></i> More...
-        </button>
-      </div>
-
-      <select id="style-select" class="mt-3" style="display: none;">
-        <option value="">Select from 100+ styles...</option>
-        <option value="Abstract">Abstract</option>
-        <option value="Art Deco">Art Deco</option>
-        <option value="Baroque">Baroque</option>
-        <option value="Bauhaus">Bauhaus</option>
-        <option value="Cartoon">Cartoon</option>
-        <option value="Cubism">Cubism</option>
-        <option value="Digital Art">Digital Art</option>
-        <option value="Expressionism">Expressionism</option>
-        <option value="Graffiti">Graffiti</option>
-        <option value="Impressionism">Impressionism</option>
-        <option value="Low Poly">Low Poly</option>
-        <option value="Minimalism">Minimalism</option>
-        <option value="Pixel Art">Pixel Art</option>
-        <option value="Pop Art">Pop Art</option>
-        <option value="Renaissance">Renaissance</option>
-        <option value="Steampunk">Steampunk</option>
-        <option value="Surrealism">Surrealism</option>
-        <option value="Ukiyo-e">Ukiyo-e</option>
-        <option value="Vaporwave">Vaporwave</option>
-      </select>
-    </div>
-
-    <div class="panel">
-      <div class="panel-title">
-        <i class="fas fa-sliders-h"></i>
-        <span>Advanced Settings</span>
+  <div class="generator-container">
+    <h1>AI Image Generator</h1>
+    <div class="generator">
+      <div class="form-group">
+        <label for="prompt">Image Prompt</label>
+        <textarea id="prompt" rows="3" placeholder="Describe the image you want to generate..."></textarea>
       </div>
       
-      <div class="grid grid-cols-2 gap-3">
-        <div>
-          <label class="mb-2">Quality Level</label>
-          <div class="grid grid-cols-3 gap-2">
-            <button onclick="setQuality('standard')" class="btn btn-secondary">Standard</button>
-            <button onclick="setQuality('hd')" class="btn btn-secondary active">HD</button>
-            <button onclick="setQuality('ultra')" class="btn btn-secondary">Ultra</button>
-          </div>
-        </div>
-        
-        <div>
-          <label class="mb-2">Special Effects</label>
-          <select id="effect">
-            <option value="">None</option>
-            <option value="Cinematic lighting">Cinematic Lighting</option>
-            <option value="Dramatic shadows">Dramatic Shadows</option>
-            <option value="Glow">Glow Effect</option>
-            <option value="Neon light">Neon Lights</option>
-            <option value="Volumetric lighting">Volumetric Light</option>
-            <option value="Tilt-shift">Tilt-Shift</option>
-            <option value="Bokeh">Bokeh Blur</option>
-          </select>
-        </div>
+      <div class="form-group">
+        <label for="model">AI Model</label>
+        <select id="model">
+          <option value="Stable Diffusion">Stable Diffusion</option>
+          <option value="DALL-E">DALL-E</option>
+          <option value="FLUX">FLUX</option>
+        </select>
       </div>
       
-      <div class="mt-3">
-        <label class="mb-2">Aspect Ratio</label>
-        <div class="grid grid-cols-6 gap-2">
-          <button onclick="setAspect('1:1')" class="btn btn-secondary active">1:1</button>
-          <button onclick="setAspect('4:3')" class="btn btn-secondary">4:3</button>
-          <button onclick="setAspect('3:2')" class="btn btn-secondary">3:2</button>
-          <button onclick="setAspect('16:9')" class="btn btn-secondary">16:9</button>
-          <button onclick="setAspect('9:16')" class="btn btn-secondary">9:16</button>
-          <button onclick="setAspect('21:9')" class="btn btn-secondary">21:9</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="flex gap-3 mt-4">
-      <button onclick="generateImage()" class="btn btn-primary flex-1">
-        <i class="fas fa-bolt"></i> Generate Image
-      </button>
-      <button onclick="resetAll()" class="btn btn-danger">
-        <i class="fas fa-trash"></i> Reset
-      </button>
-    </div>
-
-    <div class="panel mt-3">
-      <div class="panel-title">
-        <i class="fas fa-image"></i>
-        <span>Generated Image</span>
+      <div class="form-group">
+        <label for="style">Style</label>
+        <select id="style">
+          <option value="Digital Art">Digital Art</option>
+          <option value="Photorealistic">Photorealistic</option>
+          <option value="Painting">Painting</option>
+          <option value="3D Render">3D Render</option>
+          <option value="Anime">Anime</option>
+        </select>
       </div>
       
-      <div class="image-container" id="imageContainer">
-        <div class="placeholder">
-          <i class="fas fa-image"></i>
-          <p>Your generated image will appear here</p>
-        </div>
-        <img id="output" src="" alt="Generated AI artwork"/>
-        <div id="loader">
-          <div class="loader-spinner"></div>
-          <div class="loader-text">Creating your artwork...</div>
-        </div>
+      <div class="form-group">
+        <label for="effect">Effect</label>
+        <select id="effect">
+          <option value="None">None</option>
+          <option value="Vibrant Colors">Vibrant Colors</option>
+          <option value="Soft Focus">Soft Focus</option>
+          <option value="Cinematic">Cinematic</option>
+          <option value="HDR">HDR</option>
+        </select>
       </div>
       
-      <div class="progress-container" id="progressContainer">
-        <div class="progress-bar" id="progressBar"></div>
+      <div class="form-group">
+        <label for="width">Width (512-1024)</label>
+        <input type="number" id="width" min="512" max="1024" value="512" />
       </div>
       
-      <div class="flex gap-3 mt-3">
-        <a id="downloadLink" class="btn btn-primary flex-1 download-btn">
-          <i class="fas fa-download"></i> Download HD
-        </a>
-        <button onclick="upscaleImage()" class="btn btn-secondary" id="upscaleBtn">
-          <i class="fas fa-expand"></i> Upscale 2x
-        </button>
+      <div class="form-group">
+        <label for="height">Height (512-1024)</label>
+        <input type="number" id="height" min="512" max="1024" value="512" />
       </div>
+      
+      <div class="form-group">
+        <label for="steps">Steps (20-100)</label>
+        <input type="number" id="steps" min="20" max="100" value="50" />
+      </div>
+      
+      <button onclick="generateImage()">Generate Image</button>
+      <div class="loading" id="loading">Generating image...</div>
+      <div class="loading-animation" id="loadingAnimation"></div>
     </div>
   </div>
 
-  <div class="fab" onclick="scrollToTop()" id="fab">
-    <i class="fas fa-arrow-up"></i>
-  </div>
+  <div class="images" id="imageGrid"></div>
 
   <script>
-    // Configuration
-    const config = {
-      selectedAspect: "1:1",
-      selectedQuality: "hd",
-      selectedStyle: "Realism",
-      noWatermark: true,
-      currentImageUrl: null
-    };
-
-    // Aspect ratio mapping with precise DALL-E 3 supported sizes
-    const aspectMap = {
-      "1:1": { width: 1024, height: 1024, prompt: "square aspect ratio" },
-      "4:3": { width: 1152, height: 896, prompt: "4:3 aspect ratio" },
-      "3:2": { width: 1216, height: 832, prompt: "3:2 aspect ratio" },
-      "16:9": { width: 1344, height: 768, prompt: "16:9 widescreen" },
-      "9:16": { width: 768, height: 1344, prompt: "9:16 portrait" },
-      "21:9": { width: 1536, height: 640, prompt: "21:9 cinematic widescreen" }
-    };
-
-    // Quality settings
-    const qualitySettings = {
-      "standard": { prompt: "", quality: "standard" },
-      "hd": { prompt: "highly detailed, 8K resolution, professional photography, ", quality: "hd" },
-      "ultra": { prompt: "ultra detailed, 16K resolution, award-winning photography, ", quality: "hd" }
-    };
-
-    // Initialize
-    document.addEventListener('DOMContentLoaded', function() {
-      // Hide FAB initially
-      document.getElementById('fab').style.display = 'none';
-      
-      // Show FAB when scrolling
-      window.addEventListener('scroll', function() {
-        const fab = document.getElementById('fab');
-        fab.style.display = window.scrollY > 300 ? 'flex' : 'none';
-      });
-    });
-
-    // Set aspect ratio
-    function setAspect(ratio) {
-      config.selectedAspect = ratio;
-      
-      // Update active button
-      document.querySelectorAll('[onclick^="setAspect"]').forEach(btn => {
-        btn.classList.remove('active');
-      });
-      event.target.classList.add('active');
-    }
-
-    // Set quality level
-    function setQuality(level) {
-      config.selectedQuality = level;
-      
-      // Update active button
-      document.querySelectorAll('[onclick^="setQuality"]').forEach(btn => {
-        btn.classList.remove('active');
-      });
-      event.target.classList.add('active');
-    }
-
-    // Set art style
-    function setStyle(style) {
-      config.selectedStyle = style;
-      
-      // Update active button
-      document.querySelectorAll('[onclick^="setStyle"]').forEach(btn => {
-        btn.classList.remove('active');
-      });
-      event.target.classList.add('active');
-    }
-
-    // Show all style options
-    function showAllStyles() {
-      const styleSelect = document.getElementById('style-select');
-      styleSelect.style.display = styleSelect.style.display === 'none' ? 'block' : 'none';
-    }
-
-    // Generate the image using DALL-E 3 API
     async function generateImage() {
-      const promptText = document.getElementById('prompt').value.trim();
-      const effect = document.getElementById('effect').value;
+      const prompt = document.getElementById("prompt").value.trim();
+      const model = document.getElementById("model").value;
+      const style = document.getElementById("style").value;
+      const effect = document.getElementById("effect").value;
+      const width = document.getElementById("width").value;
+      const height = document.getElementById("height").value;
+      const steps = document.getElementById("steps").value;
+      const loading = document.getElementById("loading");
+      const loadingAnimation = document.getElementById("loadingAnimation");
+      const imageGrid = document.getElementById("imageGrid");
 
-      if (!promptText) {
-        alert("Please enter a detailed prompt for best results");
+      if (!prompt) {
+        alert("Please enter a prompt.");
         return;
       }
 
-      const aspect = aspectMap[config.selectedAspect] || aspectMap["1:1"];
-      const quality = qualitySettings[config.selectedQuality] || qualitySettings["hd"];
-      
-      // Build the full prompt
-      let fullPrompt = `${quality.prompt}${promptText}`;
-      if (config.selectedStyle) fullPrompt += `, ${config.selectedStyle} style`;
-      if (effect) fullPrompt += `, ${effect}`;
-      fullPrompt += `, ${aspect.prompt}`;
-      
-      // For no watermark
-      if (config.noWatermark) {
-        fullPrompt += ", no watermark, no signature, no text";
+      // Validate dimensions
+      if (width < 512 || width > 1024 || height < 512 || height > 1024) {
+        alert("Width and height must be between 512 and 1024.");
+        return;
       }
 
-      const loader = document.getElementById("loader");
-      const output = document.getElementById("output");
-      const placeholder = document.querySelector(".placeholder");
-      const downloadLink = document.getElementById("downloadLink");
-      const progressContainer = document.getElementById("progressContainer");
-      const progressBar = document.getElementById("progressBar");
+      loading.style.display = "block";
+      loadingAnimation.style.display = "block";
 
-      // Show loader and hide previous results
-      loader.style.display = 'flex';
-      placeholder.style.display = 'none';
-      output.classList.remove('loaded');
-      downloadLink.style.display = 'none';
-      progressContainer.style.display = 'block';
-      progressBar.style.width = '0%';
+      const fullPrompt = `${prompt} | model: ${model} | style: ${style} | effect: ${effect}`;
+      const apiUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}?width=${width}&height=${height}&steps=${steps}`;
 
       try {
-        // Simulate progress
-        let progress = 0;
-        const progressInterval = setInterval(() => {
-          progress += Math.random() * 10;
-          if (progress > 90) clearInterval(progressInterval);
-          progressBar.style.width = `${Math.min(progress, 90)}%`;
-        }, 300);
-
-        // In a real implementation, you would call the DALL-E 3 API here
-        // This is a simulation using a placeholder service
-        const timestamp = Date.now();
-        const sizeParam = `${aspect.width}x${aspect.height}`;
-        const apiUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}?width=${aspect.width}&height=${aspect.height}&timestamp=${timestamp}`;
+        const img = new Image();
+        img.src = apiUrl;
+        img.alt = prompt;
         
-        const response = await fetch(apiUrl);
+        const card = document.createElement("div");
+        card.className = "image-card";
         
-        if (!response.ok) {
-          throw new Error(`API request failed with status ${response.status}`);
-        }
-        
-        // Get the image blob
-        const blob = await response.blob();
-        const url = URL.createObjectURL(blob);
-        config.currentImageUrl = url;
+        const downloadLink = document.createElement("a");
+        downloadLink.href = apiUrl;
+        downloadLink.download = `ai-image-${Date.now()}.jpg`;
+        downloadLink.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/><path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/></svg> Download';
+        downloadLink.className = "download-btn";
 
-        // Update progress to 100%
-        clearInterval(progressInterval);
-        progressBar.style.width = '100%';
-        setTimeout(() => progressContainer.style.display = 'none', 500);
-
-        // Display the image
-        output.src = url;
-        output.onload = function() {
-          output.classList.add('loaded');
-          loader.style.display = 'none';
-          
-          // Set up download link
-          downloadLink.href = url;
-          downloadLink.download = `rizqio-ai-${timestamp}.png`;
-          downloadLink.style.display = 'inline-block';
-          
-          // Enable upscale button
-          document.getElementById('upscaleBtn').disabled = false;
+        img.onload = () => {
+          loading.style.display = "none";
+          loadingAnimation.style.display = "none";
+          card.appendChild(img);
+          card.appendChild(downloadLink);
+          imageGrid.prepend(card);
         };
-        
+
+        img.onerror = () => {
+          loading.style.display = "none";
+          loadingAnimation.style.display = "none";
+          alert("Failed to generate image. Please try a different prompt or check your connection.");
+        };
       } catch (err) {
+        loading.style.display = "none";
+        loadingAnimation.style.display = "none";
+        alert("An error occurred. Please try again later.");
         console.error("Image generation error:", err);
-        alert("Failed to generate image. Please try again with a different prompt.");
-        loader.style.display = 'none';
-        placeholder.style.display = 'flex';
-        progressContainer.style.display = 'none';
       }
     }
-
-    // Improved download function
-    function downloadImage() {
-      if (!config.currentImageUrl) return;
-      
-      const link = document.createElement('a');
-      link.href = config.currentImageUrl;
-      link.download = `rizqio-ai-${Date.now()}.png`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-
-    // Upscale image (mock function)
-    function upscaleImage() {
-      if (!config.currentImageUrl) return;
-      alert("Upscale feature would use a professional AI upscaling service in production");
-    }
-
-    // Reset all fields
-    function resetAll() {
-      document.getElementById('prompt').value = '';
-      document.getElementById('effect').value = '';
-      document.getElementById('output').classList.remove('loaded');
-      document.querySelector('.placeholder').style.display = 'flex';
-      document.getElementById('downloadLink').style.display = 'none';
-      document.getElementById('loader').style.display = 'none';
-      document.getElementById('progressContainer').style.display = 'none';
-      
-      // Reset to defaults
-      setAspect('1:1');
-      setQuality('hd');
-      setStyle('Realism');
-      
-      // Revoke object URL to free memory
-      if (config.currentImageUrl) {
-        URL.revokeObjectURL(config.currentImageUrl);
-        config.currentImageUrl = null;
+    
+    // Allow form submission with Enter key
+    document.getElementById("prompt").addEventListener("keydown", function(e) {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        generateImage();
       }
-    }
-
-    // Scroll to top
-    function scrollToTop() {
-      window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-      });
-    }
-
-    // Update download button to use the improved download function
-    document.getElementById('downloadLink').addEventListener('click', function(e) {
-      e.preventDefault();
-      downloadImage();
     });
   </script>
 </body>
 </html>
+    
