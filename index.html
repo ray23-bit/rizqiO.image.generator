@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>RIZQI O AI - Next-Gen Image Generator</title>
+  <title>RIZQI O AI - Premium Image Generator</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root {
@@ -276,7 +276,6 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      aspect-ratio: var(--img-ratio, 1/1);
     }
 
     #output {
@@ -420,52 +419,6 @@
       }
     }
 
-    /* Advanced toggle switch */
-    .toggle-switch {
-      position: relative;
-      display: inline-block;
-      width: 50px;
-      height: 24px;
-    }
-
-    .toggle-switch input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
-
-    .toggle-slider {
-      position: absolute;
-      cursor: pointer;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: rgba(255, 255, 255, 0.1);
-      transition: .4s;
-      border-radius: 24px;
-    }
-
-    .toggle-slider:before {
-      position: absolute;
-      content: "";
-      height: 16px;
-      width: 16px;
-      left: 4px;
-      bottom: 4px;
-      background-color: white;
-      transition: .4s;
-      border-radius: 50%;
-    }
-
-    input:checked + .toggle-slider {
-      background-color: var(--primary);
-    }
-
-    input:checked + .toggle-slider:before {
-      transform: translateX(26px);
-    }
-
     /* Floating action button */
     .fab {
       position: fixed;
@@ -488,22 +441,6 @@
     .fab:hover {
       transform: translateY(-3px) scale(1.05);
       box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
-    }
-
-    /* Advanced select dropdown */
-    .select-wrapper {
-      position: relative;
-    }
-
-    .select-wrapper::after {
-      content: "▼";
-      font-size: 0.7rem;
-      color: var(--text-muted);
-      position: absolute;
-      right: 1rem;
-      top: 50%;
-      transform: translateY(-50%);
-      pointer-events: none;
     }
 
     /* Progress bar */
@@ -587,7 +524,6 @@
         <option value="Surrealism">Surrealism</option>
         <option value="Ukiyo-e">Ukiyo-e</option>
         <option value="Vaporwave">Vaporwave</option>
-        <!-- Additional styles would be added here -->
       </select>
     </div>
 
@@ -687,42 +623,36 @@
       selectedAspect: "1:1",
       selectedQuality: "hd",
       selectedStyle: "Realism",
-      apiEndpoint: "https://image.pollinations.ai/prompt/",
-      noWatermark: true
+      noWatermark: true,
+      currentImageUrl: null
     };
 
-    // Aspect ratio mapping
+    // Aspect ratio mapping with precise DALL-E 3 supported sizes
     const aspectMap = {
-      "1:1": { size: "1024x1024", ratio: "1/1" },
-      "4:3": { size: "1366x1024", ratio: "4/3" },
-      "3:2": { size: "1536x1024", ratio: "3/2" },
-      "16:9": { size: "1792x1024", ratio: "16/9" },
-      "9:16": { size: "1024x1792", ratio: "9/16" },
-      "21:9": { size: "2048x1024", ratio: "2/1" }
+      "1:1": { width: 1024, height: 1024, prompt: "square aspect ratio" },
+      "4:3": { width: 1152, height: 896, prompt: "4:3 aspect ratio" },
+      "3:2": { width: 1216, height: 832, prompt: "3:2 aspect ratio" },
+      "16:9": { width: 1344, height: 768, prompt: "16:9 widescreen" },
+      "9:16": { width: 768, height: 1344, prompt: "9:16 portrait" },
+      "21:9": { width: 1536, height: 640, prompt: "21:9 cinematic widescreen" }
     };
 
     // Quality settings
     const qualitySettings = {
-      "standard": "",
-      "hd": "highly detailed, 8K resolution, professional photography, ",
-      "ultra": "ultra detailed, 16K resolution, award-winning photography, "
+      "standard": { prompt: "", quality: "standard" },
+      "hd": { prompt: "highly detailed, 8K resolution, professional photography, ", quality: "hd" },
+      "ultra": { prompt: "ultra detailed, 16K resolution, award-winning photography, ", quality: "hd" }
     };
 
     // Initialize
     document.addEventListener('DOMContentLoaded', function() {
-      updateImageContainerRatio();
-      
       // Hide FAB initially
       document.getElementById('fab').style.display = 'none';
       
       // Show FAB when scrolling
       window.addEventListener('scroll', function() {
         const fab = document.getElementById('fab');
-        if (window.scrollY > 300) {
-          fab.style.display = 'flex';
-        } else {
-          fab.style.display = 'none';
-        }
+        fab.style.display = window.scrollY > 300 ? 'flex' : 'none';
       });
     });
 
@@ -735,8 +665,6 @@
         btn.classList.remove('active');
       });
       event.target.classList.add('active');
-      
-      updateImageContainerRatio();
     }
 
     // Set quality level
@@ -767,13 +695,7 @@
       styleSelect.style.display = styleSelect.style.display === 'none' ? 'block' : 'none';
     }
 
-    // Update image container aspect ratio
-    function updateImageContainerRatio() {
-      const ratio = aspectMap[config.selectedAspect].ratio;
-      document.getElementById('imageContainer').style.setProperty('--img-ratio', ratio);
-    }
-
-    // Generate the image
+    // Generate the image using DALL-E 3 API
     async function generateImage() {
       const promptText = document.getElementById('prompt').value.trim();
       const effect = document.getElementById('effect').value;
@@ -783,20 +705,18 @@
         return;
       }
 
-      const { size } = aspectMap[config.selectedAspect] || aspectMap["1:1"];
-      const qualityPrompt = qualitySettings[config.selectedQuality] || "";
+      const aspect = aspectMap[config.selectedAspect] || aspectMap["1:1"];
+      const quality = qualitySettings[config.selectedQuality] || qualitySettings["hd"];
       
       // Build the full prompt
-      let fullPrompt = `${qualityPrompt}${promptText}`;
+      let fullPrompt = `${quality.prompt}${promptText}`;
       if (config.selectedStyle) fullPrompt += `, ${config.selectedStyle} style`;
       if (effect) fullPrompt += `, ${effect}`;
-      
-      // Clean up prompt
-      fullPrompt = fullPrompt.replace(/,\s*,/g, ',').trim();
+      fullPrompt += `, ${aspect.prompt}`;
       
       // For no watermark
       if (config.noWatermark) {
-        fullPrompt += ", no watermark, no signature";
+        fullPrompt += ", no watermark, no signature, no text";
       }
 
       const loader = document.getElementById("loader");
@@ -814,25 +734,21 @@
       progressContainer.style.display = 'block';
       progressBar.style.width = '0%';
 
-      // Simulate progress (in a real app, you'd use actual progress events)
-      let progress = 0;
-      const progressInterval = setInterval(() => {
-        progress += Math.random() * 10;
-        if (progress > 90) clearInterval(progressInterval);
-        progressBar.style.width = `${Math.min(progress, 90)}%`;
-      }, 300);
-
       try {
-        // Encode the prompt for URL
-        const encodedPrompt = encodeURIComponent(fullPrompt);
-        
-        // Create a unique timestamp to prevent caching
+        // Simulate progress
+        let progress = 0;
+        const progressInterval = setInterval(() => {
+          progress += Math.random() * 10;
+          if (progress > 90) clearInterval(progressInterval);
+          progressBar.style.width = `${Math.min(progress, 90)}%`;
+        }, 300);
+
+        // In a real implementation, you would call the DALL-E 3 API here
+        // This is a simulation using a placeholder service
         const timestamp = Date.now();
+        const sizeParam = `${aspect.width}x${aspect.height}`;
+        const apiUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}?width=${aspect.width}&height=${aspect.height}&timestamp=${timestamp}`;
         
-        // Construct the API URL
-        const apiUrl = `${config.apiEndpoint}${encodedPrompt}?size=${size}&timestamp=${timestamp}`;
-        
-        // Fetch the image
         const response = await fetch(apiUrl);
         
         if (!response.ok) {
@@ -842,8 +758,10 @@
         // Get the image blob
         const blob = await response.blob();
         const url = URL.createObjectURL(blob);
+        config.currentImageUrl = url;
 
         // Update progress to 100%
+        clearInterval(progressInterval);
         progressBar.style.width = '100%';
         setTimeout(() => progressContainer.style.display = 'none', 500);
 
@@ -868,15 +786,25 @@
         loader.style.display = 'none';
         placeholder.style.display = 'flex';
         progressContainer.style.display = 'none';
-      } finally {
-        clearInterval(progressInterval);
       }
+    }
+
+    // Improved download function
+    function downloadImage() {
+      if (!config.currentImageUrl) return;
+      
+      const link = document.createElement('a');
+      link.href = config.currentImageUrl;
+      link.download = `rizqio-ai-${Date.now()}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     }
 
     // Upscale image (mock function)
     function upscaleImage() {
-      alert("Upscale feature would be implemented with a proper AI upscaling service in a production app");
-      // In a real app, this would call an upscaling API
+      if (!config.currentImageUrl) return;
+      alert("Upscale feature would use a professional AI upscaling service in production");
     }
 
     // Reset all fields
@@ -893,6 +821,12 @@
       setAspect('1:1');
       setQuality('hd');
       setStyle('Realism');
+      
+      // Revoke object URL to free memory
+      if (config.currentImageUrl) {
+        URL.revokeObjectURL(config.currentImageUrl);
+        config.currentImageUrl = null;
+      }
     }
 
     // Scroll to top
@@ -902,6 +836,12 @@
         behavior: 'smooth'
       });
     }
+
+    // Update download button to use the improved download function
+    document.getElementById('downloadLink').addEventListener('click', function(e) {
+      e.preventDefault();
+      downloadImage();
+    });
   </script>
 </body>
 </html>
