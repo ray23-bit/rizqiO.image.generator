@@ -2,221 +2,363 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>RIZQI O AI - Premium Image Generator</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Image Generator</title>
   <style>
-    /* [Previous CSS styles remain exactly the same] */
+    :root {
+      --primary-color: #6a11cb;
+      --secondary-color: #2575fc;
+      --background-gradient: linear-gradient(135deg, #0f52ba, #a1c4fd);
+      --card-bg: rgba(255, 255, 255, 0.1);
+      --text-color: #fff;
+      --border-radius: 0.5rem;
+      --box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+    
+    * {
+      box-sizing: border-box;
+    }
+    
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--background-gradient);
+      color: var(--text-color);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1rem;
+    }
+    
+    h1 {
+      margin: 1rem 0;
+      text-align: center;
+      font-size: clamp(1.5rem, 4vw, 2.5rem);
+    }
+    
+    .generator-container {
+      width: 100%;
+      max-width: 1200px;
+      padding: 0 1rem;
+    }
+    
+    .generator {
+      background: var(--card-bg);
+      padding: 1.5rem;
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto;
+      position: relative;
+    }
+    
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 0.3rem;
+      font-weight: 500;
+    }
+    
+    textarea, select, input {
+      width: 100%;
+      padding: 0.75rem;
+      margin: 0.3rem 0;
+      border: none;
+      border-radius: var(--border-radius);
+      font-size: 1rem;
+      background: rgba(255, 255, 255, 0.2);
+      color: var(--text-color);
+      transition: background 0.3s, box-shadow 0.3s;
+    }
+    
+    textarea:focus, select:focus, input:focus {
+      outline: none;
+      background: rgba(255, 255, 255, 0.3);
+      box-shadow: 0 0 0 2px rgba(106, 17, 203, 0.5);
+    }
+    
+    textarea::placeholder, input::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+    }
+    
+    button {
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      transition: all 0.3s;
+      width: 100%;
+      margin-top: 0.5rem;
+    }
+    
+    button:hover {
+      background: var(--secondary-color);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    
+    button:active {
+      transform: translateY(0);
+    }
+    
+    .loading {
+      margin-top: 1rem;
+      font-weight: bold;
+      color: var(--text-color);
+      text-align: center;
+      display: none;
+    }
+    
+    .images {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin: 2rem 0;
+      width: 100%;
+      max-width: 1200px;
+      padding: 0 1rem;
+    }
+    
+    .image-card {
+      position: relative;
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      aspect-ratio: 1/1;
+      background: rgba(0,0,0,0.1);
+    }
+    
+    .image-card img {
+      width: 100%;
+      height: 100%;
+      border-radius: var(--border-radius);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      object-fit: cover;
+      transition: transform 0.3s;
+    }
+    
+    .image-card:hover img {
+      transform: scale(1.03);
+    }
+    
+    .download-btn {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      background: rgba(0,0,0,0.7);
+      color: #fff;
+      padding: 0.5rem 1rem;
+      border-radius: var(--border-radius);
+      font-size: 0.9rem;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      transition: all 0.3s;
+    }
+    
+    .download-btn:hover {
+      background: rgba(0,0,0,0.9);
+      transform: translateY(-2px);
+    }
+    
+    .loading-animation {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      border-top: 4px solid var(--primary-color);
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      z-index: 10;
+    }
+    
+    @keyframes spin {
+      0% { transform: translate(-50%, -50%) rotate(0deg); }
+      100% { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .generator {
+        padding: 1rem;
+      }
+      
+      .images {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      body {
+        padding: 0.5rem;
+      }
+      
+      .generator {
+        padding: 0.75rem;
+      }
+      
+      textarea, select, input {
+        padding: 0.6rem;
+      }
+      
+      button {
+        padding: 0.6rem;
+      }
+      
+      .images {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 <body>
-  <!-- [Previous HTML structure remains exactly the same] -->
+  <div class="generator-container">
+    <h1>AI Image Generator</h1>
+    <div class="generator">
+      <div class="form-group">
+        <label for="prompt">Image Prompt</label>
+        <textarea id="prompt" rows="3" placeholder="Describe the image you want to generate..."></textarea>
+      </div>
+      
+      <div class="form-group">
+        <label for="model">AI Model</label>
+        <select id="model">
+          <option value="Stable Diffusion">Stable Diffusion</option>
+          <option value="DALL-E">DALL-E</option>
+          <option value="FLUX">FLUX</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="style">Style</label>
+        <select id="style">
+          <option value="Digital Art">Digital Art</option>
+          <option value="Photorealistic">Photorealistic</option>
+          <option value="Painting">Painting</option>
+          <option value="3D Render">3D Render</option>
+          <option value="Anime">Anime</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="effect">Effect</label>
+        <select id="effect">
+          <option value="None">None</option>
+          <option value="Vibrant Colors">Vibrant Colors</option>
+          <option value="Soft Focus">Soft Focus</option>
+          <option value="Cinematic">Cinematic</option>
+          <option value="HDR">HDR</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="width">Width (512-1024)</label>
+        <input type="number" id="width" min="512" max="1024" value="512" />
+      </div>
+      
+      <div class="form-group">
+        <label for="height">Height (512-1024)</label>
+        <input type="number" id="height" min="512" max="1024" value="512" />
+      </div>
+      
+      <div class="form-group">
+        <label for="steps">Steps (20-100)</label>
+        <input type="number" id="steps" min="20" max="100" value="50" />
+      </div>
+      
+      <button onclick="generateImage()">Generate Image</button>
+      <div class="loading" id="loading">Generating image...</div>
+      <div class="loading-animation" id="loadingAnimation"></div>
+    </div>
+  </div>
+
+  <div class="images" id="imageGrid"></div>
 
   <script>
-    // Configuration
-    const config = {
-      selectedAspect: "1:1",
-      selectedQuality: "hd",
-      selectedStyle: "Realism",
-      noWatermark: true,
-      currentImageUrl: null
-    };
-
-    // Aspect ratio mapping with precise DALL-E 3 supported sizes
-    const aspectMap = {
-      "1:1": { width: 1024, height: 1024, prompt: "square aspect ratio" },
-      "4:3": { width: 1152, height: 896, prompt: "4:3 aspect ratio" },
-      "3:2": { width: 1216, height: 832, prompt: "3:2 aspect ratio" },
-      "16:9": { width: 1344, height: 768, prompt: "16:9 widescreen" },
-      "9:16": { width: 768, height: 1344, prompt: "9:16 portrait" },
-      "21:9": { width: 1536, height: 640, prompt: "21:9 cinematic widescreen" }
-    };
-
-    // Quality settings
-    const qualitySettings = {
-      "standard": { prompt: "", quality: "standard" },
-      "hd": { prompt: "highly detailed, 8K resolution, professional photography, ", quality: "hd" },
-      "ultra": { prompt: "ultra detailed, 16K resolution, award-winning photography, ", quality: "hd" }
-    };
-
-    // Initialize
-    document.addEventListener('DOMContentLoaded', function() {
-      document.getElementById('fab').style.display = 'none';
-      window.addEventListener('scroll', function() {
-        document.getElementById('fab').style.display = window.scrollY > 300 ? 'flex' : 'none';
-      });
-    });
-
-    // [Previous setAspect, setQuality, setStyle, showAllStyles functions remain the same]
-
-    // Generate the image using pollinations.ai with watermark removal
     async function generateImage() {
-      const promptText = document.getElementById('prompt').value.trim();
-      const effect = document.getElementById('effect').value;
+      const prompt = document.getElementById("prompt").value.trim();
+      const model = document.getElementById("model").value;
+      const style = document.getElementById("style").value;
+      const effect = document.getElementById("effect").value;
+      const width = document.getElementById("width").value;
+      const height = document.getElementById("height").value;
+      const steps = document.getElementById("steps").value;
+      const loading = document.getElementById("loading");
+      const loadingAnimation = document.getElementById("loadingAnimation");
+      const imageGrid = document.getElementById("imageGrid");
 
-      if (!promptText) {
-        alert("Please enter a detailed prompt for best results");
+      if (!prompt) {
+        alert("Please enter a prompt.");
         return;
       }
 
-      const aspect = aspectMap[config.selectedAspect] || aspectMap["1:1"];
-      const quality = qualitySettings[config.selectedQuality] || qualitySettings["hd"];
-      
-      // Build the full prompt with watermark prevention
-      let fullPrompt = `${quality.prompt}${promptText}`;
-      if (config.selectedStyle) fullPrompt += `, ${config.selectedStyle} style`;
-      if (effect) fullPrompt += `, ${effect}`;
-      fullPrompt += `, ${aspect.prompt}`;
-      
-      // Explicit watermark removal techniques for pollinations.ai
-      fullPrompt += ", no watermark, no signature, no text, no logo, no branding";
-      fullPrompt += ", clean edges, professional finish";
+      // Validate dimensions
+      if (width < 512 || width > 1024 || height < 512 || height > 1024) {
+        alert("Width and height must be between 512 and 1024.");
+        return;
+      }
 
-      const loader = document.getElementById("loader");
-      const output = document.getElementById("output");
-      const placeholder = document.querySelector(".placeholder");
-      const downloadLink = document.getElementById("downloadLink");
-      const progressContainer = document.getElementById("progressContainer");
-      const progressBar = document.getElementById("progressBar");
+      loading.style.display = "block";
+      loadingAnimation.style.display = "block";
 
-      // Show loader and hide previous results
-      loader.style.display = 'flex';
-      placeholder.style.display = 'none';
-      output.classList.remove('loaded');
-      downloadLink.style.display = 'none';
-      progressContainer.style.display = 'block';
-      progressBar.style.width = '0%';
+      const fullPrompt = `${prompt} | model: ${model} | style: ${style} | effect: ${effect}`;
+      const apiUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}?width=${width}&height=${height}&steps=${steps}`;
 
       try {
-        // Simulate progress
-        let progress = 0;
-        const progressInterval = setInterval(() => {
-          progress += Math.random() * 10;
-          if (progress > 90) clearInterval(progressInterval);
-          progressBar.style.width = `${Math.min(progress, 90)}%`;
-        }, 300);
+        const img = new Image();
+        img.src = apiUrl;
+        img.alt = prompt;
+        
+        const card = document.createElement("div");
+        card.className = "image-card";
+        
+        const downloadLink = document.createElement("a");
+        downloadLink.href = apiUrl;
+        downloadLink.download = `ai-image-${Date.now()}.jpg`;
+        downloadLink.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/><path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/></svg> Download';
+        downloadLink.className = "download-btn";
 
-        // Special watermark removal technique for pollinations.ai
-        const timestamp = Date.now();
-        const sizeParam = `${aspect.width}x${aspect.height}`;
-        
-        // Modified API call to minimize watermark chances
-        const apiUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}` + 
-          `?width=${aspect.width}&height=${aspect.height}` +
-          `&nofilter=true&notxt=true&nobrand=true` +  // Watermark prevention parameters
-          `&timestamp=${timestamp}`;
-        
-        const response = await fetch(apiUrl);
-        
-        if (!response.ok) {
-          throw new Error(`API request failed with status ${response.status}`);
-        }
-        
-        // Get the image blob and process it to ensure no watermark
-        const blob = await response.blob();
-        let url = URL.createObjectURL(blob);
-        
-        // Additional client-side watermark check and removal
-        url = await checkAndRemoveWatermark(url);
-        config.currentImageUrl = url;
-
-        // Update progress to 100%
-        clearInterval(progressInterval);
-        progressBar.style.width = '100%';
-        setTimeout(() => progressContainer.style.display = 'none', 500);
-
-        // Display the image
-        output.src = url;
-        output.onload = function() {
-          output.classList.add('loaded');
-          loader.style.display = 'none';
-          
-          // Set up download link
-          downloadLink.href = url;
-          downloadLink.download = `rizqio-ai-${timestamp}.png`;
-          downloadLink.style.display = 'inline-block';
-          document.getElementById('upscaleBtn').disabled = false;
+        img.onload = () => {
+          loading.style.display = "none";
+          loadingAnimation.style.display = "none";
+          card.appendChild(img);
+          card.appendChild(downloadLink);
+          imageGrid.prepend(card);
         };
-        
+
+        img.onerror = () => {
+          loading.style.display = "none";
+          loadingAnimation.style.display = "none";
+          alert("Failed to generate image. Please try a different prompt or check your connection.");
+        };
       } catch (err) {
+        loading.style.display = "none";
+        loadingAnimation.style.display = "none";
+        alert("An error occurred. Please try again later.");
         console.error("Image generation error:", err);
-        alert("Failed to generate image. Please try again with a different prompt.");
-        loader.style.display = 'none';
-        placeholder.style.display = 'flex';
-        progressContainer.style.display = 'none';
       }
     }
-
-    // Client-side watermark detection and removal
-    async function checkAndRemoveWatermark(imageUrl) {
-      return new Promise((resolve) => {
-        const img = new Image();
-        img.crossOrigin = "Anonymous";
-        img.src = imageUrl;
-        
-        img.onload = function() {
-          const canvas = document.createElement('canvas');
-          const ctx = canvas.getContext('2d');
-          canvas.width = img.width;
-          canvas.height = img.height;
-          ctx.drawImage(img, 0, 0);
-          
-          // Simple watermark detection (checks bottom right corner)
-          const watermarkArea = {
-            x: img.width - 100,
-            y: img.height - 50,
-            width: 100,
-            height: 50
-          };
-          
-          // Get image data from potential watermark area
-          const imageData = ctx.getImageData(
-            watermarkArea.x, 
-            watermarkArea.y, 
-            watermarkArea.width, 
-            watermarkArea.height
-          );
-          
-          // Simple check for watermark (looking for non-transparent pixels in corner)
-          let hasWatermark = false;
-          for (let i = 0; i < imageData.data.length; i += 4) {
-            if (imageData.data[i+3] > 0) { // If pixel is not transparent
-              hasWatermark = true;
-              break;
-            }
-          }
-          
-          if (hasWatermark) {
-            // Apply simple watermark removal by cropping 5% from bottom
-            const cleanCanvas = document.createElement('canvas');
-            const cleanCtx = cleanCanvas.getContext('2d');
-            cleanCanvas.width = img.width;
-            cleanCanvas.height = img.height * 0.95; // Crop 5% from bottom
-            
-            cleanCtx.drawImage(
-              img, 
-              0, 0, img.width, img.height * 0.95,
-              0, 0, img.width, img.height * 0.95
-            );
-            
-            resolve(cleanCanvas.toDataURL('image/png'));
-          } else {
-            resolve(imageUrl);
-          }
-        };
-        
-        img.onerror = function() {
-          resolve(imageUrl); // Fallback to original if error occurs
-        };
-      });
-    }
-
-    // [Previous downloadImage, upscaleImage, resetAll, scrollToTop functions remain the same]
-
-    // Update download button
-    document.getElementById('downloadLink').addEventListener('click', function(e) {
-      e.preventDefault();
-      downloadImage();
+    
+    // Allow form submission with Enter key
+    document.getElementById("prompt").addEventListener("keydown", function(e) {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        generateImage();
+      }
     });
   </script>
 </body>
