@@ -3,25 +3,41 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>RIZQI O AI - Advanced Image Generator</title>
+  <title>RIZQI O AI - Next-Gen Image Generator</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root {
-      --primary-color: #800020; /* Maroon red */
-      --secondary-color: #4a0c25;
-      --accent-color: #ff6b6b;
+      --primary: #800020; /* Maroon red */
+      --primary-dark: #5a0018;
+      --primary-light: #a3002a;
+      --secondary: #1a1a2e;
+      --accent: #ff6b6b;
+      --accent-dark: #e05a5a;
+      --text: #f8f9fa;
+      --text-muted: #adb5bd;
+      --bg-dark: #0d0d15;
+      --bg-darker: #08080f;
+      --success: #28a745;
+      --info: #17a2b8;
+      --warning: #ffc107;
+      --danger: #dc3545;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
     body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, var(--secondary-color), var(--primary-color)),
-                  url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23800020" opacity="0.2"/><path d="M0 0 L100 100 M100 0 L0 100" stroke="%23ff6b6b" stroke-width="1" opacity="0.1"/></svg>');
-      color: #fff;
+      font-family: 'Segoe UI', 'Roboto', system-ui, -apple-system, sans-serif;
+      background: var(--bg-darker);
+      color: var(--text);
+      line-height: 1.6;
       display: flex;
       flex-direction: column;
-      align-items: center;
       min-height: 100vh;
-      padding: 2rem;
+      padding: 1rem;
       position: relative;
       overflow-x: hidden;
     }
@@ -32,204 +48,319 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      font-size: 20vw;
+      font-size: clamp(10rem, 30vw, 30rem);
       font-weight: 900;
-      color: var(--primary-color);
-      opacity: 0.1;
+      color: var(--primary);
+      opacity: 0.03;
       z-index: -1;
       pointer-events: none;
       white-space: nowrap;
+      font-style: italic;
     }
 
-    h1 {
-      margin-bottom: 1rem;
+    .header {
       text-align: center;
-      color: white;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      margin-bottom: 2rem;
       position: relative;
     }
 
-    h1::after {
-      content: "";
-      display: block;
-      width: 100px;
-      height: 4px;
-      background: var(--accent-color);
-      margin: 0.5rem auto;
-      border-radius: 2px;
+    .header h1 {
+      font-size: clamp(1.8rem, 5vw, 2.5rem);
+      margin-bottom: 0.5rem;
+      background: linear-gradient(90deg, var(--accent), var(--primary));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      font-weight: 800;
+    }
+
+    .header p {
+      color: var(--text-muted);
+      font-size: clamp(0.9rem, 3vw, 1.1rem);
+      max-width: 700px;
+      margin: 0 auto;
     }
 
     .container {
-      background: rgba(0, 0, 0, 0.7);
+      background: rgba(13, 13, 21, 0.8);
       border-radius: 16px;
-      padding: 2rem;
-      max-width: 900px;
+      padding: clamp(1rem, 3vw, 2rem);
       width: 100%;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      max-width: 1200px;
+      margin: 0 auto;
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
     }
 
-    textarea, select, button {
+    .panel {
+      background: rgba(20, 20, 35, 0.6);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .panel-title {
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    textarea, select {
       width: 100%;
-      margin: 0.5rem 0;
-      padding: 0.75rem;
+      padding: 1rem;
       font-size: 1rem;
-      border: none;
       border-radius: 8px;
-      background: rgba(255, 255, 255, 0.1);
-      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(10, 10, 20, 0.8);
+      color: var(--text);
       transition: all 0.3s ease;
-    }
-
-    textarea {
-      min-height: 100px;
       resize: vertical;
     }
 
+    textarea {
+      min-height: 120px;
+    }
+
     textarea:focus, select:focus {
-      outline: 2px solid var(--accent-color);
-      background: rgba(255, 255, 255, 0.15);
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(128, 0, 32, 0.3);
+      background: rgba(15, 15, 25, 0.9);
     }
 
-    button {
-      background-color: var(--accent-color);
-      color: white;
-      cursor: pointer;
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.8rem 1.5rem;
+      font-size: 1rem;
       font-weight: 600;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
       text-transform: uppercase;
-      letter-spacing: 1px;
+      letter-spacing: 0.5px;
+      gap: 0.5rem;
     }
 
-    button:hover {
-      background-color: #ff5252;
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-light);
       transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 4px 12px rgba(128, 0, 32, 0.3);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #c82333;
+    }
+
+    .btn-sm {
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+    }
+
+    .btn.active {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
+    }
+
+    .grid {
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    .grid-cols-2 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .grid-cols-3 {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .grid-cols-4 {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .grid-cols-5 {
+      grid-template-columns: repeat(5, 1fr);
+    }
+
+    .grid-cols-6 {
+      grid-template-columns: repeat(6, 1fr);
+    }
+
+    .flex {
+      display: flex;
+    }
+
+    .flex-col {
+      flex-direction: column;
+    }
+
+    .items-center {
+      align-items: center;
+    }
+
+    .justify-center {
+      justify-content: center;
+    }
+
+    .gap-2 {
+      gap: 0.5rem;
+    }
+
+    .gap-3 {
+      gap: 1rem;
+    }
+
+    .gap-4 {
+      gap: 1.5rem;
+    }
+
+    .w-full {
+      width: 100%;
+    }
+
+    .mt-3 {
+      margin-top: 1rem;
+    }
+
+    .mt-4 {
+      margin-top: 1.5rem;
+    }
+
+    .mb-2 {
+      margin-bottom: 0.5rem;
+    }
+
+    .mb-3 {
+      margin-bottom: 1rem;
+    }
+
+    .text-center {
+      text-align: center;
     }
 
     .image-container {
-      margin-top: 1.5rem;
       width: 100%;
-      display: flex;
-      justify-content: center;
       min-height: 300px;
       background: rgba(0, 0, 0, 0.3);
       border-radius: 12px;
       overflow: hidden;
       position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      aspect-ratio: var(--img-ratio, 1/1);
     }
 
     #output {
-      display: none;
-      border-radius: 12px;
       max-width: 100%;
       max-height: 70vh;
       object-fit: contain;
-      transition: opacity 0.3s ease;
+      display: none;
+      border-radius: 8px;
+    }
+
+    #output.loaded {
+      display: block;
+      animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
 
     .download-btn {
-      background-color: var(--primary-color);
-      margin-top: 1rem;
       display: none;
-      text-align: center;
       text-decoration: none;
-      padding: 0.75rem;
-      border-radius: 8px;
-      color: white;
-      font-weight: 600;
-      transition: all 0.3s ease;
-    }
-
-    .download-btn:hover {
-      background-color: #6a001b;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    }
-
-    .aspect-select {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-bottom: 1rem;
-    }
-
-    .aspect-select button {
-      flex: 1;
-      background: rgba(255, 255, 255, 0.1);
-      font-size: 0.9rem;
-      padding: 0.5rem;
-      min-width: 60px;
-    }
-
-    .aspect-select button.active {
-      background: var(--accent-color);
-      font-weight: bold;
-    }
-
-    .row {
-      display: flex;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-    }
-
-    .row > * {
-      flex: 1;
-      min-width: 150px;
     }
 
     #loader {
       display: none;
-      text-align: center;
-      margin-top: 1rem;
       flex-direction: column;
       align-items: center;
+      gap: 1rem;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10;
     }
 
     .loader-spinner {
-      border: 5px solid rgba(255, 255, 255, 0.3);
-      border-top: 5px solid var(--accent-color);
+      width: 50px;
+      height: 50px;
+      border: 4px solid rgba(255, 255, 255, 0.1);
+      border-top: 4px solid var(--accent);
       border-radius: 50%;
-      width: 40px;
-      height: 40px;
       animation: spin 1s linear infinite;
-      margin: 1rem auto;
     }
 
-    .quality-selector {
-      display: flex;
-      gap: 0.5rem;
-      margin: 1rem 0;
+    .loader-text {
+      color: var(--text-muted);
+      font-size: 1.1rem;
     }
 
-    .quality-selector button {
-      flex: 1;
+    .placeholder {
+      color: var(--text-muted);
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .placeholder i {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.5rem;
+      font-size: 0.75rem;
+      border-radius: 4px;
       background: rgba(255, 255, 255, 0.1);
+      color: var(--text-muted);
     }
 
-    .quality-selector button.active {
-      background: var(--accent-color);
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    /* Tooltip styles */
     .tooltip {
       position: relative;
-      display: inline-block;
     }
 
     .tooltip .tooltiptext {
       visibility: hidden;
       width: 200px;
-      background-color: #333;
+      background-color: rgba(0, 0, 0, 0.9);
       color: #fff;
       text-align: center;
       border-radius: 6px;
-      padding: 5px;
+      padding: 0.5rem;
       position: absolute;
       z-index: 1;
       bottom: 125%;
@@ -238,6 +369,7 @@
       opacity: 0;
       transition: opacity 0.3s;
       font-size: 0.8rem;
+      pointer-events: none;
     }
 
     .tooltip:hover .tooltiptext {
@@ -246,195 +378,404 @@
     }
 
     /* Responsive adjustments */
+    @media (max-width: 1024px) {
+      .grid-cols-6, .grid-cols-5 {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
     @media (max-width: 768px) {
-      .container {
+      .grid-cols-6, .grid-cols-5, .grid-cols-4 {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      
+      .panel {
         padding: 1rem;
       }
-      
-      .row {
-        flex-direction: column;
-        gap: 0.5rem;
+    }
+
+    @media (max-width: 576px) {
+      .grid-cols-6, .grid-cols-5, .grid-cols-4, .grid-cols-3 {
+        grid-template-columns: repeat(2, 1fr);
       }
       
-      .aspect-select button {
-        min-width: 40px;
-        font-size: 0.8rem;
-        padding: 0.3rem;
+      body {
+        padding: 0.5rem;
       }
+      
+      .container {
+        padding: 1rem;
+        border-radius: 12px;
+      }
+      
+      .btn {
+        padding: 0.7rem 1rem;
+        font-size: 0.9rem;
+      }
+    }
+
+    @media (max-width: 400px) {
+      .grid-cols-6, .grid-cols-5, .grid-cols-4, .grid-cols-3, .grid-cols-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Advanced toggle switch */
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 24px;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(255, 255, 255, 0.1);
+      transition: .4s;
+      border-radius: 24px;
+    }
+
+    .toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .toggle-slider {
+      background-color: var(--primary);
+    }
+
+    input:checked + .toggle-slider:before {
+      transform: translateX(26px);
+    }
+
+    /* Floating action button */
+    .fab {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      cursor: pointer;
+      z-index: 100;
+      transition: all 0.3s ease;
+    }
+
+    .fab:hover {
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Advanced select dropdown */
+    .select-wrapper {
+      position: relative;
+    }
+
+    .select-wrapper::after {
+      content: "▼";
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+
+    /* Progress bar */
+    .progress-container {
+      width: 100%;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+      margin-top: 1rem;
+      overflow: hidden;
+      display: none;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: var(--primary);
+      width: 0%;
+      transition: width 0.3s ease;
     }
   </style>
 </head>
 <body>
-  <h1>RIZQI O AI - Advanced Image Generator</h1>
+  <div class="header">
+    <h1>RIZQI O AI IMAGE GENERATOR</h1>
+    <p>Create stunning AI-generated artwork with advanced control and no watermarks</p>
+  </div>
+
   <div class="container">
-    <textarea id="prompt" placeholder="Describe the image you want to generate... Be as detailed as possible for best results."></textarea>
+    <div class="panel">
+      <div class="panel-title">
+        <i class="fas fa-magic"></i>
+        <span>Prompt Configuration</span>
+      </div>
+      <textarea id="prompt" placeholder="Describe your image in detail... Example: 'A majestic lion with a golden mane standing on a cliff at sunset, hyper-realistic 8K wildlife photography with dramatic lighting'"></textarea>
+    </div>
 
-    <div class="row">
-      <div class="tooltip">
-        <select id="style">
-          <option value="">-- Art Style --</option>
-          <option value="Abstract Expressionism">Abstract Expressionism</option>
-          <option value="Anime">Anime</option>
-          <option value="Art Deco">Art Deco</option>
-          <option value="Art Nouveau">Art Nouveau</option>
-          <option value="Baroque">Baroque</option>
-          <option value="Bauhaus">Bauhaus</option>
-          <option value="Cyberpunk">Cyberpunk</option>
-          <option value="Cubism">Cubism</option>
-          <option value="Dadaism">Dadaism</option>
-          <option value="Digital Painting">Digital Painting</option>
-          <option value="Expressionism">Expressionism</option>
-          <option value="Fantasy">Fantasy</option>
-          <option value="Futurism">Futurism</option>
-          <option value="Gothic">Gothic</option>
-          <option value="Graffiti">Graffiti</option>
-          <option value="Hyperrealism">Hyperrealism</option>
-          <option value="Impressionism">Impressionism</option>
-          <option value="Low Poly">Low Poly</option>
-          <option value="Minimalism">Minimalism</option>
-          <option value="Pixel Art">Pixel Art</option>
-          <option value="Pop Art">Pop Art</option>
-          <option value="Realism">Realism</option>
-          <option value="Renaissance">Renaissance</option>
-          <option value="Retro">Retro</option>
-          <option value="Steampunk">Steampunk</option>
-          <option value="Surrealism">Surrealism</option>
-          <option value="Ukiyo-e">Ukiyo-e</option>
-          <option value="Vaporwave">Vaporwave</option>
-          <option value="Watercolor">Watercolor</option>
-        </select>
-        <span class="tooltiptext">Select an art style for your image</span>
+    <div class="panel">
+      <div class="panel-title">
+        <i class="fas fa-palette"></i>
+        <span>Art Style</span>
+      </div>
+      <div class="grid grid-cols-3 gap-3">
+        <button onclick="setStyle('Realism')" class="btn btn-secondary active">
+          <i class="fas fa-eye"></i> Realism
+        </button>
+        <button onclick="setStyle('Anime')" class="btn btn-secondary">
+          <i class="fas fa-gamepad"></i> Anime
+        </button>
+        <button onclick="setStyle('Cyberpunk')" class="btn btn-secondary">
+          <i class="fas fa-city"></i> Cyberpunk
+        </button>
+        <button onclick="setStyle('Fantasy')" class="btn btn-secondary">
+          <i class="fas fa-dragon"></i> Fantasy
+        </button>
+        <button onclick="setStyle('Watercolor')" class="btn btn-secondary">
+          <i class="fas fa-paint-brush"></i> Watercolor
+        </button>
+        <button onclick="showAllStyles()" class="btn btn-secondary">
+          <i class="fas fa-ellipsis-h"></i> More...
+        </button>
       </div>
 
-      <div class="tooltip">
-        <select id="effect">
-          <option value="">-- Special Effect --</option>
-          <option value="8K resolution">8K Resolution</option>
-          <option value="Bokeh">Bokeh</option>
-          <option value="Chiaroscuro">Chiaroscuro</option>
-          <option value="Cinematic lighting">Cinematic Lighting</option>
-          <option value="Dramatic shadows">Dramatic Shadows</option>
-          <option value="Duotone">Duotone</option>
-          <option value="Film grain">Film Grain</option>
-          <option value="Glow">Glow</option>
-          <option value="HDR">HDR</option>
-          <option value="Lens flare">Lens Flare</option>
-          <option value="Long exposure">Long Exposure</option>
-          <option value="Macro">Macro</option>
-          <option value="Motion blur">Motion Blur</option>
-          <option value="Neon light">Neon Light</option>
-          <option value="Panoramic">Panoramic</option>
-          <option value="Silhouette">Silhouette</option>
-          <option value="Soft focus">Soft Focus</option>
-          <option value="Tilt-shift">Tilt-Shift</option>
-          <option value="Vignette">Vignette</option>
-          <option value="Volumetric lighting">Volumetric Lighting</option>
-        </select>
-        <span class="tooltiptext">Add special effects to your image</span>
+      <select id="style-select" class="mt-3" style="display: none;">
+        <option value="">Select from 100+ styles...</option>
+        <option value="Abstract">Abstract</option>
+        <option value="Art Deco">Art Deco</option>
+        <option value="Baroque">Baroque</option>
+        <option value="Bauhaus">Bauhaus</option>
+        <option value="Cartoon">Cartoon</option>
+        <option value="Cubism">Cubism</option>
+        <option value="Digital Art">Digital Art</option>
+        <option value="Expressionism">Expressionism</option>
+        <option value="Graffiti">Graffiti</option>
+        <option value="Impressionism">Impressionism</option>
+        <option value="Low Poly">Low Poly</option>
+        <option value="Minimalism">Minimalism</option>
+        <option value="Pixel Art">Pixel Art</option>
+        <option value="Pop Art">Pop Art</option>
+        <option value="Renaissance">Renaissance</option>
+        <option value="Steampunk">Steampunk</option>
+        <option value="Surrealism">Surrealism</option>
+        <option value="Ukiyo-e">Ukiyo-e</option>
+        <option value="Vaporwave">Vaporwave</option>
+        <!-- Additional styles would be added here -->
+      </select>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">
+        <i class="fas fa-sliders-h"></i>
+        <span>Advanced Settings</span>
+      </div>
+      
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="mb-2">Quality Level</label>
+          <div class="grid grid-cols-3 gap-2">
+            <button onclick="setQuality('standard')" class="btn btn-secondary">Standard</button>
+            <button onclick="setQuality('hd')" class="btn btn-secondary active">HD</button>
+            <button onclick="setQuality('ultra')" class="btn btn-secondary">Ultra</button>
+          </div>
+        </div>
+        
+        <div>
+          <label class="mb-2">Special Effects</label>
+          <select id="effect">
+            <option value="">None</option>
+            <option value="Cinematic lighting">Cinematic Lighting</option>
+            <option value="Dramatic shadows">Dramatic Shadows</option>
+            <option value="Glow">Glow Effect</option>
+            <option value="Neon light">Neon Lights</option>
+            <option value="Volumetric lighting">Volumetric Light</option>
+            <option value="Tilt-shift">Tilt-Shift</option>
+            <option value="Bokeh">Bokeh Blur</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="mt-3">
+        <label class="mb-2">Aspect Ratio</label>
+        <div class="grid grid-cols-6 gap-2">
+          <button onclick="setAspect('1:1')" class="btn btn-secondary active">1:1</button>
+          <button onclick="setAspect('4:3')" class="btn btn-secondary">4:3</button>
+          <button onclick="setAspect('3:2')" class="btn btn-secondary">3:2</button>
+          <button onclick="setAspect('16:9')" class="btn btn-secondary">16:9</button>
+          <button onclick="setAspect('9:16')" class="btn btn-secondary">9:16</button>
+          <button onclick="setAspect('21:9')" class="btn btn-secondary">21:9</button>
+        </div>
       </div>
     </div>
 
-    <div class="quality-selector">
-      <button onclick="setQuality('standard')" class="active">Standard</button>
-      <button onclick="setQuality('hd')">High Quality</button>
-      <button onclick="setQuality('ultra')">Ultra Quality</button>
+    <div class="flex gap-3 mt-4">
+      <button onclick="generateImage()" class="btn btn-primary flex-1">
+        <i class="fas fa-bolt"></i> Generate Image
+      </button>
+      <button onclick="resetAll()" class="btn btn-danger">
+        <i class="fas fa-trash"></i> Reset
+      </button>
     </div>
 
-    <div class="aspect-select">
-      <button onclick="setAspect('1:1')" class="active">Square (1:1)</button>
-      <button onclick="setAspect('16:9')">Widescreen (16:9)</button>
-      <button onclick="setAspect('9:16')">Portrait (9:16)</button>
-      <button onclick="setAspect('4:3')">Standard (4:3)</button>
-      <button onclick="setAspect('3:2')">Classic (3:2)</button>
-      <button onclick="setAspect('2:3')">Tall (2:3)</button>
-      <button onclick="setAspect('21:9')">Cinematic (21:9)</button>
-      <button onclick="setAspect('9:21')">Ultra Tall (9:21)</button>
+    <div class="panel mt-3">
+      <div class="panel-title">
+        <i class="fas fa-image"></i>
+        <span>Generated Image</span>
+      </div>
+      
+      <div class="image-container" id="imageContainer">
+        <div class="placeholder">
+          <i class="fas fa-image"></i>
+          <p>Your generated image will appear here</p>
+        </div>
+        <img id="output" src="" alt="Generated AI artwork"/>
+        <div id="loader">
+          <div class="loader-spinner"></div>
+          <div class="loader-text">Creating your artwork...</div>
+        </div>
+      </div>
+      
+      <div class="progress-container" id="progressContainer">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+      
+      <div class="flex gap-3 mt-3">
+        <a id="downloadLink" class="btn btn-primary flex-1 download-btn">
+          <i class="fas fa-download"></i> Download HD
+        </a>
+        <button onclick="upscaleImage()" class="btn btn-secondary" id="upscaleBtn">
+          <i class="fas fa-expand"></i> Upscale 2x
+        </button>
+      </div>
     </div>
+  </div>
 
-    <button onclick="generateImage()">Generate Image</button>
-    <button onclick="resetAll()" style="background:#6a001b;">Reset All</button>
-
-    <div id="loader">
-      <div class="loader-spinner"></div>
-      <p>Generating your masterpiece...</p>
-    </div>
-
-    <div class="image-container">
-      <img id="output" src="" alt="Generated image will appear here"/>
-    </div>
-
-    <a id="downloadLink" class="download-btn" download="rizqio-ai-image.png">Download Image</a>
+  <div class="fab" onclick="scrollToTop()" id="fab">
+    <i class="fas fa-arrow-up"></i>
   </div>
 
   <script>
     // Configuration
     const config = {
       selectedAspect: "1:1",
-      selectedQuality: "standard",
-      apiEndpoint: "https://image.pollinations.ai/prompt/"
+      selectedQuality: "hd",
+      selectedStyle: "Realism",
+      apiEndpoint: "https://image.pollinations.ai/prompt/",
+      noWatermark: true
     };
 
-    // Aspect ratio mapping with more options
+    // Aspect ratio mapping
     const aspectMap = {
-      "1:1": { size: "1024x1024", ratio: "1 / 1" },
-      "16:9": { size: "1792x1024", ratio: "16 / 9" },
-      "9:16": { size: "1024x1792", ratio: "9 / 16" },
-      "4:3": { size: "1366x1024", ratio: "4 / 3" },
-      "3:2": { size: "1536x1024", ratio: "3 / 2" },
-      "2:3": { size: "1024x1536", ratio: "2 / 3" },
-      "21:9": { size: "2048x1024", ratio: "2 / 1" },
-      "9:21": { size: "1024x2048", ratio: "1 / 2" }
+      "1:1": { size: "1024x1024", ratio: "1/1" },
+      "4:3": { size: "1366x1024", ratio: "4/3" },
+      "3:2": { size: "1536x1024", ratio: "3/2" },
+      "16:9": { size: "1792x1024", ratio: "16/9" },
+      "9:16": { size: "1024x1792", ratio: "9/16" },
+      "21:9": { size: "2048x1024", ratio: "2/1" }
     };
 
     // Quality settings
     const qualitySettings = {
       "standard": "",
-      "hd": "high details, 8K resolution, ",
-      "ultra": "ultra detailed, 16K resolution, professional photography, "
+      "hd": "highly detailed, 8K resolution, professional photography, ",
+      "ultra": "ultra detailed, 16K resolution, award-winning photography, "
     };
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      updateImageContainerRatio();
+      
+      // Hide FAB initially
+      document.getElementById('fab').style.display = 'none';
+      
+      // Show FAB when scrolling
+      window.addEventListener('scroll', function() {
+        const fab = document.getElementById('fab');
+        if (window.scrollY > 300) {
+          fab.style.display = 'flex';
+        } else {
+          fab.style.display = 'none';
+        }
+      });
+    });
 
     // Set aspect ratio
     function setAspect(ratio) {
       config.selectedAspect = ratio;
+      
       // Update active button
-      document.querySelectorAll('.aspect-select button').forEach(btn => {
+      document.querySelectorAll('[onclick^="setAspect"]').forEach(btn => {
         btn.classList.remove('active');
-        if (btn.textContent.includes(ratio)) {
-          btn.classList.add('active');
-        }
       });
+      event.target.classList.add('active');
+      
+      updateImageContainerRatio();
     }
 
     // Set quality level
     function setQuality(level) {
       config.selectedQuality = level;
+      
       // Update active button
-      document.querySelectorAll('.quality-selector button').forEach(btn => {
+      document.querySelectorAll('[onclick^="setQuality"]').forEach(btn => {
         btn.classList.remove('active');
-        if (btn.textContent.toLowerCase().includes(level)) {
-          btn.classList.add('active');
-        }
       });
+      event.target.classList.add('active');
     }
 
-    // Reset all fields
-    function resetAll() {
-      document.getElementById('prompt').value = '';
-      document.getElementById('style').value = '';
-      document.getElementById('effect').value = '';
-      document.getElementById('output').style.display = 'none';
-      document.getElementById('downloadLink').style.display = 'none';
-      document.getElementById('loader').style.display = 'none';
+    // Set art style
+    function setStyle(style) {
+      config.selectedStyle = style;
       
-      // Reset to defaults
-      setAspect('1:1');
-      setQuality('standard');
+      // Update active button
+      document.querySelectorAll('[onclick^="setStyle"]').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      event.target.classList.add('active');
+    }
+
+    // Show all style options
+    function showAllStyles() {
+      const styleSelect = document.getElementById('style-select');
+      styleSelect.style.display = styleSelect.style.display === 'none' ? 'block' : 'none';
+    }
+
+    // Update image container aspect ratio
+    function updateImageContainerRatio() {
+      const ratio = aspectMap[config.selectedAspect].ratio;
+      document.getElementById('imageContainer').style.setProperty('--img-ratio', ratio);
     }
 
     // Generate the image
     async function generateImage() {
       const promptText = document.getElementById('prompt').value.trim();
-      const style = document.getElementById('style').value;
       const effect = document.getElementById('effect').value;
 
       if (!promptText) {
@@ -442,32 +783,51 @@
         return;
       }
 
-      const { size, ratio } = aspectMap[config.selectedAspect] || aspectMap["1:1"];
+      const { size } = aspectMap[config.selectedAspect] || aspectMap["1:1"];
       const qualityPrompt = qualitySettings[config.selectedQuality] || "";
       
       // Build the full prompt
       let fullPrompt = `${qualityPrompt}${promptText}`;
-      if (style) fullPrompt += `, ${style} style`;
+      if (config.selectedStyle) fullPrompt += `, ${config.selectedStyle} style`;
       if (effect) fullPrompt += `, ${effect}`;
       
-      // Clean up prompt (remove double commas)
+      // Clean up prompt
       fullPrompt = fullPrompt.replace(/,\s*,/g, ',').trim();
+      
+      // For no watermark
+      if (config.noWatermark) {
+        fullPrompt += ", no watermark, no signature";
+      }
 
       const loader = document.getElementById("loader");
       const output = document.getElementById("output");
+      const placeholder = document.querySelector(".placeholder");
       const downloadLink = document.getElementById("downloadLink");
+      const progressContainer = document.getElementById("progressContainer");
+      const progressBar = document.getElementById("progressBar");
 
       // Show loader and hide previous results
       loader.style.display = 'flex';
-      output.style.display = 'none';
+      placeholder.style.display = 'none';
+      output.classList.remove('loaded');
       downloadLink.style.display = 'none';
+      progressContainer.style.display = 'block';
+      progressBar.style.width = '0%';
+
+      // Simulate progress (in a real app, you'd use actual progress events)
+      let progress = 0;
+      const progressInterval = setInterval(() => {
+        progress += Math.random() * 10;
+        if (progress > 90) clearInterval(progressInterval);
+        progressBar.style.width = `${Math.min(progress, 90)}%`;
+      }, 300);
 
       try {
         // Encode the prompt for URL
         const encodedPrompt = encodeURIComponent(fullPrompt);
         
         // Create a unique timestamp to prevent caching
-        const timestamp = new Date().getTime();
+        const timestamp = Date.now();
         
         // Construct the API URL
         const apiUrl = `${config.apiEndpoint}${encodedPrompt}?size=${size}&timestamp=${timestamp}`;
@@ -483,27 +843,65 @@
         const blob = await response.blob();
         const url = URL.createObjectURL(blob);
 
+        // Update progress to 100%
+        progressBar.style.width = '100%';
+        setTimeout(() => progressContainer.style.display = 'none', 500);
+
         // Display the image
         output.src = url;
-        output.style.display = 'block';
-        output.style.aspectRatio = ratio;
-
-        // Set up download link
-        downloadLink.href = url;
-        downloadLink.download = `rizqio-ai-${Date.now()}.png`;
-        downloadLink.style.display = 'inline-block';
+        output.onload = function() {
+          output.classList.add('loaded');
+          loader.style.display = 'none';
+          
+          // Set up download link
+          downloadLink.href = url;
+          downloadLink.download = `rizqio-ai-${timestamp}.png`;
+          downloadLink.style.display = 'inline-block';
+          
+          // Enable upscale button
+          document.getElementById('upscaleBtn').disabled = false;
+        };
         
       } catch (err) {
         console.error("Image generation error:", err);
         alert("Failed to generate image. Please try again with a different prompt.");
-      } finally {
         loader.style.display = 'none';
+        placeholder.style.display = 'flex';
+        progressContainer.style.display = 'none';
+      } finally {
+        clearInterval(progressInterval);
       }
     }
 
-    // Initialize default settings
-    setAspect('1:1');
-    setQuality('standard');
+    // Upscale image (mock function)
+    function upscaleImage() {
+      alert("Upscale feature would be implemented with a proper AI upscaling service in a production app");
+      // In a real app, this would call an upscaling API
+    }
+
+    // Reset all fields
+    function resetAll() {
+      document.getElementById('prompt').value = '';
+      document.getElementById('effect').value = '';
+      document.getElementById('output').classList.remove('loaded');
+      document.querySelector('.placeholder').style.display = 'flex';
+      document.getElementById('downloadLink').style.display = 'none';
+      document.getElementById('loader').style.display = 'none';
+      document.getElementById('progressContainer').style.display = 'none';
+      
+      // Reset to defaults
+      setAspect('1:1');
+      setQuality('hd');
+      setStyle('Realism');
+    }
+
+    // Scroll to top
+    function scrollToTop() {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }
   </script>
 </body>
 </html>
