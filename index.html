@@ -316,7 +316,7 @@
       loadingAnimation.style.display = "block";
 
       const fullPrompt = `${prompt} | model: ${model} | style: ${style} | effect: ${effect}`;
-      const apiUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}?width=${width}&height=${height}&steps=${steps}`;
+      const apiUrl = const url = `https://image.pollinations.ai/prompt/${prompt}?watermark=false`;
 
       try {
         const img = new Image();
