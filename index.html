@@ -667,7 +667,7 @@
       try {
         // For demonstration, we'll use a placeholder service
         // In a real app, you would use your own backend or a proper API
-        const apiUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=${width}&height=${height}&nofilter=true`;
+        const apiUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=${width}&height=${height}&nologo=true`;
         
         const img = new Image();
         img.src = apiUrl;
