@@ -1,4 +1,777 @@
-<!DOCTYPE html>
+<!DOCTYPE html><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nexus AI Image Generator</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #4361ee;
+      --secondary-color: #3a0ca3;
+      --accent-color: #7209b7;
+      --dark-color: #1a1a2e;
+      --light-color: #f8f9fa;
+      --card-bg: rgba(255, 255, 255, 0.08);
+      --text-color: #e2e2e2;
+      --text-muted: #b8b8b8;
+      --border-radius: 12px;
+      --box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+      --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      margin: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+      color: var(--text-color);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+      line-height: 1.6;
+    }
+    
+    h1 {
+      margin: 1rem 0 2rem;
+      text-align: center;
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      font-weight: 800;
+      background: linear-gradient(90deg, #fff, #a5b4fc);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      letter-spacing: -0.5px;
+    }
+    
+    .subtitle {
+      text-align: center;
+      margin-bottom: 2rem;
+      color: var(--text-muted);
+      max-width: 700px;
+    }
+    
+    .generator-container {
+      width: 100%;
+      max-width: 1400px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      padding: 0 1rem;
+    }
+    
+    @media (max-width: 1024px) {
+      .generator-container {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    .generator {
+      background: var(--card-bg);
+      padding: 2rem;
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .generator::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(67,97,238,0.1) 0%, rgba(0,0,0,0) 70%);
+      z-index: -1;
+    }
+    
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+    
+    textarea, select, input {
+      width: 100%;
+      padding: 0.85rem 1rem;
+      margin: 0.3rem 0;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--border-radius);
+      font-size: 1rem;
+      background: rgba(0, 0, 0, 0.2);
+      color: var(--text-color);
+      transition: var(--transition);
+    }
+    
+    textarea:focus, select:focus, input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.3);
+    }
+    
+    textarea::placeholder, input::placeholder {
+      color: rgba(255, 255, 255, 0.4);
+    }
+    
+    .form-row {
+      display: flex;
+      gap: 1rem;
+    }
+    
+    .form-row .form-group {
+      flex: 1;
+    }
+    
+    button {
+      padding: 1rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      transition: var(--transition);
+      width: 100%;
+      margin-top: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    
+    button:hover {
+      background: var(--accent-color);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+    }
+    
+    button:active {
+      transform: translateY(0);
+    }
+    
+    .loading {
+      margin-top: 1rem;
+      font-weight: bold;
+      color: var(--text-color);
+      text-align: center;
+      display: none;
+    }
+    
+    .images-container {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+    }
+    
+    .images {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+      width: 100%;
+    }
+    
+    .image-card {
+      position: relative;
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      background: rgba(0,0,0,0.2);
+      transition: var(--transition);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    .image-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    }
+    
+    .image-card img {
+      width: 100%;
+      height: 100%;
+      border-radius: var(--border-radius);
+      object-fit: cover;
+      display: block;
+    }
+    
+    .image-actions {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(transparent, rgba(0,0,0,0.8));
+      padding: 1rem;
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.5rem;
+      opacity: 0;
+      transition: var(--transition);
+    }
+    
+    .image-card:hover .image-actions {
+      opacity: 1;
+    }
+    
+    .action-btn {
+      background: rgba(255,255,255,0.2);
+      color: white;
+      border: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition);
+      backdrop-filter: blur(5px);
+    }
+    
+    .action-btn:hover {
+      background: var(--primary-color);
+      transform: scale(1.1);
+    }
+    
+    .loading-animation {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border: 4px solid rgba(255, 255, 255, 0.1);
+      border-top: 4px solid var(--primary-color);
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      z-index: 10;
+    }
+    
+    @keyframes spin {
+      0% { transform: translate(-50%, -50%) rotate(0deg); }
+      100% { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+    
+    /* Aspect ratio selector */
+    .aspect-ratio-selector {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    
+    .aspect-ratio-btn {
+      background: rgba(0,0,0,0.2);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 6px;
+      padding: 0.5rem;
+      text-align: center;
+      cursor: pointer;
+      transition: var(--transition);
+      font-size: 0.85rem;
+    }
+    
+    .aspect-ratio-btn:hover {
+      background: rgba(67, 97, 238, 0.2);
+      border-color: var(--primary-color);
+    }
+    
+    .aspect-ratio-btn.active {
+      background: var(--primary-color);
+      border-color: var(--primary-color);
+      font-weight: 500;
+    }
+    
+    .custom-size-inputs {
+      display: flex;
+      gap: 1rem;
+    }
+    
+    .custom-size-inputs input {
+      flex: 1;
+    }
+    
+    /* Advanced options */
+    .advanced-options {
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .advanced-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      margin-bottom: 1rem;
+      color: var(--text-muted);
+    }
+    
+    .advanced-toggle i {
+      transition: transform 0.3s;
+    }
+    
+    .advanced-toggle.active i {
+      transform: rotate(180deg);
+    }
+    
+    .advanced-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease-out;
+    }
+    
+    .advanced-content.show {
+      max-height: 500px;
+    }
+    
+    /* Range slider */
+    .slider-container {
+      margin-top: 0.5rem;
+    }
+    
+    .slider-label {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+    }
+    
+    input[type="range"] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 6px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 3px;
+      outline: none;
+    }
+    
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--primary-color);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+      background: var(--accent-color);
+    }
+    
+    /* Prompt examples */
+    .prompt-examples {
+      margin-top: 2rem;
+    }
+    
+    .prompt-examples h3 {
+      margin-bottom: 1rem;
+      color: var(--text-muted);
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    .example-chip {
+      display: inline-block;
+      background: rgba(67, 97, 238, 0.1);
+      border: 1px solid rgba(67, 97, 238, 0.3);
+      border-radius: 20px;
+      padding: 0.5rem 1rem;
+      margin: 0 0.5rem 0.5rem 0;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    
+    .example-chip:hover {
+      background: rgba(67, 97, 238, 0.3);
+      border-color: var(--primary-color);
+    }
+    
+    /* Empty state */
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 3rem;
+      color: var(--text-muted);
+      border: 2px dashed rgba(255,255,255,0.1);
+      border-radius: var(--border-radius);
+    }
+    
+    .empty-state i {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .generator {
+        padding: 1.5rem;
+      }
+      
+      .images {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 1rem;
+      }
+      
+      .aspect-ratio-selector {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    
+    @media (max-width: 480px) {
+      body {
+        padding: 1rem 0.5rem;
+      }
+      
+      .generator {
+        padding: 1rem;
+      }
+      
+      textarea, select, input {
+        padding: 0.75rem;
+      }
+      
+      button {
+        padding: 0.85rem;
+      }
+      
+      .form-row {
+        flex-direction: column;
+        gap: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Nexus AI Image Generator</h1>
+  <p class="subtitle">Create stunning AI-generated images with no watermarks. Customize every aspect of your creation.</p>
+
+  <div class="generator-container">
+    <div class="generator">
+      <div class="form-group">
+        <label for="prompt">Describe your image</label>
+        <textarea id="prompt" rows="4" placeholder="A majestic lion in the savannah at sunset, highly detailed, cinematic lighting..."></textarea>
+      </div>
+      
+      <div class="form-group">
+        <label for="negative-prompt">Negative prompt (what to exclude)</label>
+        <textarea id="negative-prompt" rows="2" placeholder="blurry, low quality, text, watermark"></textarea>
+      </div>
+      
+      <div class="form-group">
+        <label for="model">AI Model</label>
+        <select id="model">
+          <option value="stable-diffusion-xl">Stable Diffusion XL</option>
+          <option value="dall-e-3">DALL-E 3</option>
+          <option value="kandinsky-2">Kandinsky 2.2</option>
+          <option value="deepfloyd-if">DeepFloyd IF</option>
+          <option value="playground-v2">Playground v2</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label>Image Dimensions</label>
+        <div class="aspect-ratio-selector">
+          <div class="aspect-ratio-btn active" data-ratio="1:1">Square (1:1)</div>
+          <div class="aspect-ratio-btn" data-ratio="4:3">Standard (4:3)</div>
+          <div class="aspect-ratio-btn" data-ratio="16:9">Widescreen (16:9)</div>
+          <div class="aspect-ratio-btn" data-ratio="9:16">Portrait (9:16)</div>
+        </div>
+        <div class="custom-size-inputs">
+          <input type="number" id="width" min="512" max="2048" value="1024" placeholder="Width" />
+          <input type="number" id="height" min="512" max="2048" value="1024" placeholder="Height" />
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="style">Style</label>
+        <select id="style">
+          <option value="realistic">Photorealistic</option>
+          <option value="digital-art">Digital Art</option>
+          <option value="fantasy-art">Fantasy Art</option>
+          <option value="anime">Anime</option>
+          <option value="3d-render">3D Render</option>
+          <option value="cinematic">Cinematic</option>
+          <option value="watercolor">Watercolor</option>
+          <option value="oil-painting">Oil Painting</option>
+        </select>
+      </div>
+      
+      <div class="advanced-options">
+        <div class="advanced-toggle" id="advancedToggle">
+          <span>Advanced Options</span>
+          <i class="fas fa-chevron-down"></i>
+        </div>
+        <div class="advanced-content" id="advancedContent">
+          <div class="form-group">
+            <label for="steps">Generation Steps (quality)</label>
+            <div class="slider-container">
+              <div class="slider-label">
+                <span>Faster</span>
+                <span>Higher Quality</span>
+              </div>
+              <input type="range" id="steps" min="20" max="100" value="50">
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="cfg-scale">Creativity vs. Prompt Adherence</label>
+            <div class="slider-container">
+              <div class="slider-label">
+                <span>More Creative</span>
+                <span>More Accurate</span>
+              </div>
+              <input type="range" id="cfg-scale" min="1" max="20" value="7">
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="seed">Seed (for reproducibility)</label>
+            <input type="number" id="seed" placeholder="Random" min="1" max="9999999999">
+          </div>
+        </div>
+      </div>
+      
+      <button onclick="generateImage()">
+        <i class="fas fa-magic"></i> Generate Image
+      </button>
+      <div class="loading" id="loading">Generating your image... This may take a moment</div>
+      <div class="loading-animation" id="loadingAnimation"></div>
+      
+      <div class="prompt-examples">
+        <h3>Prompt Examples</h3>
+        <div class="example-chip" onclick="useExample(this)">Cyberpunk city at night, neon lights, rain, 4k</div>
+        <div class="example-chip" onclick="useExample(this)">Portrait of a futuristic samurai, intricate armor</div>
+        <div class="example-chip" onclick="useExample(this)">Fantasy landscape with floating islands, sunset</div>
+        <div class="example-chip" onclick="useExample(this)">Hyperrealistic still life with fruits, studio lighting</div>
+      </div>
+    </div>
+    
+    <div class="images-container">
+      <div class="images" id="imageGrid">
+        <div class="empty-state" id="emptyState">
+          <i class="fas fa-image"></i>
+          <h3>No images generated yet</h3>
+          <p>Your AI-generated images will appear here</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Toggle advanced options
+    const advancedToggle = document.getElementById('advancedToggle');
+    const advancedContent = document.getElementById('advancedContent');
+    
+    advancedToggle.addEventListener('click', () => {
+      advancedToggle.classList.toggle('active');
+      advancedContent.classList.toggle('show');
+    });
+    
+    // Aspect ratio selection
+    const aspectRatioBtns = document.querySelectorAll('.aspect-ratio-btn');
+    const widthInput = document.getElementById('width');
+    const heightInput = document.getElementById('height');
+    
+    aspectRatioBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        aspectRatioBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        const ratio = btn.dataset.ratio;
+        const [w, h] = ratio.split(':').map(Number);
+        const baseSize = 1024;
+        
+        if (w > h) {
+          // Landscape
+          widthInput.value = baseSize;
+          heightInput.value = Math.round(baseSize * h / w);
+        } else if (h > w) {
+          // Portrait
+          heightInput.value = baseSize;
+          widthInput.value = Math.round(baseSize * w / h);
+        } else {
+          // Square
+          widthInput.value = baseSize;
+          heightInput.value = baseSize;
+        }
+      });
+    });
+    
+    // Use example prompt
+    function useExample(element) {
+      document.getElementById('prompt').value = element.textContent;
+      document.getElementById('prompt').focus();
+    }
+    
+    // Generate image function
+    async function generateImage() {
+      const prompt = document.getElementById("prompt").value.trim();
+      const negativePrompt = document.getElementById("negative-prompt").value.trim();
+      const model = document.getElementById("model").value;
+      const style = document.getElementById("style").value;
+      const width = document.getElementById("width").value;
+      const height = document.getElementById("height").value;
+      const steps = document.getElementById("steps").value;
+      const cfgScale = document.getElementById("cfg-scale").value;
+      const seed = document.getElementById("seed").value;
+      const loading = document.getElementById("loading");
+      const loadingAnimation = document.getElementById("loadingAnimation");
+      const imageGrid = document.getElementById("imageGrid");
+      const emptyState = document.getElementById("emptyState");
+
+      if (!prompt) {
+        alert("Please enter a prompt description for the image.");
+        return;
+      }
+
+      // Validate dimensions
+      if (width < 512 || width > 2048 || height < 512 || height > 2048) {
+        alert("Width and height must be between 512 and 2048.");
+        return;
+      }
+
+      loading.style.display = "block";
+      loadingAnimation.style.display = "block";
+      
+      // Hide empty state if it's the first image
+      if (emptyState.style.display !== 'none') {
+        emptyState.style.display = 'none';
+      }
+
+      try {
+        // For demonstration, we'll use a placeholder service
+        // In a real app, you would use your own backend or a proper API
+        const apiUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=${width}&height=${height}&nofilter=true`;
+        
+        const img = new Image();
+        img.src = apiUrl;
+        img.alt = prompt;
+        img.loading = "lazy";
+        
+        const card = document.createElement("div");
+        card.className = "image-card";
+        
+        const actions = document.createElement("div");
+        actions.className = "image-actions";
+        
+        const downloadBtn = document.createElement("button");
+        downloadBtn.className = "action-btn";
+        downloadBtn.title = "Download";
+        downloadBtn.innerHTML = '<i class="fas fa-download"></i>';
+        downloadBtn.onclick = () => downloadImage(apiUrl, `ai-image-${Date.now()}.jpg`);
+        
+        const shareBtn = document.createElement("button");
+        shareBtn.className = "action-btn";
+        shareBtn.title = "Share";
+        shareBtn.innerHTML = '<i class="fas fa-share-alt"></i>';
+        shareBtn.onclick = () => shareImage(apiUrl, prompt);
+        
+        actions.appendChild(downloadBtn);
+        actions.appendChild(shareBtn);
+        
+        img.onload = () => {
+          loading.style.display = "none";
+          loadingAnimation.style.display = "none";
+          card.appendChild(img);
+          card.appendChild(actions);
+          imageGrid.prepend(card);
+        };
+
+        img.onerror = () => {
+          loading.style.display = "none";
+          loadingAnimation.style.display = "none";
+          alert("Failed to generate image. Please try a different prompt or check your connection.");
+        };
+      } catch (err) {
+        loading.style.display = "none";
+        loadingAnimation.style.display = "none";
+        alert("An error occurred. Please try again later.");
+        console.error("Image generation error:", err);
+      }
+    }
+    
+    // Download image
+    function downloadImage(url, filename) {
+      fetch(url)
+        .then(response => response.blob())
+        .then(blob => {
+          const blobUrl = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = blobUrl;
+          a.download = filename;
+          document.body.appendChild(a);
+          a.click();
+          window.URL.revokeObjectURL(blobUrl);
+          document.body.removeChild(a);
+        })
+        .catch(err => {
+          console.error('Download error:', err);
+          alert('Failed to download image.');
+        });
+    }
+    
+    // Share image
+    function shareImage(url, prompt) {
+      if (navigator.share) {
+        navigator.share({
+          title: 'AI Generated Image',
+          text: prompt,
+          url: url
+        }).catch(err => {
+          console.error('Share error:', err);
+          copyToClipboard(url);
+        });
+      } else {
+        copyToClipboard(url);
+      }
+    }
+    
+    // Copy to clipboard
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text)
+        .then(() => alert('Image URL copied to clipboard!'))
+        .catch(err => {
+          console.error('Copy error:', err);
+          alert('Failed to copy URL.');
+        });
+    }
+    
+    // Allow form submission with Enter key
+    document.getElementById("prompt").addEventListener("keydown", function(e) {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        generateImage();
+      }
+    });
+  </script>
+</body>
+</html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
