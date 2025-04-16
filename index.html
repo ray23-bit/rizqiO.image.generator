@@ -1,1 +1,176 @@
-          alert('Failed to copy 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RizqiO AI Image Generator</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* [Kode CSS tetap sama] */
+  </style>
+</head>
+<body>
+  <!-- [Kode HTML tetap sama sampai bagian script] -->
+
+  <script>
+    // [Kode JavaScript untuk toggle, aspect ratio, dll tetap sama]
+    
+    // API Configuration
+    const API_CONFIG = {
+      'stable-diffusion-xl': {
+        endpoint: 'https://api.your-stable-diffusion-service.com/generate',
+        requiresAuth: true,
+        apiKey: 'your-api-key-here'
+      },
+      'dall-e-3': {
+        endpoint: 'https://api.openai.com/v1/images/generations',
+        requiresAuth: true,
+        apiKey: 'your-openai-key-here'
+      }
+      // Tambahkan konfigurasi untuk model lainnya
+    };
+
+    // Generate image function - Diperbarui untuk menggunakan API sebenarnya
+    async function generateImage() {
+      const prompt = document.getElementById("prompt").value.trim();
+      const negativePrompt = document.getElementById("negative-prompt").value.trim();
+      const model = document.getElementById("model").value;
+      const style = document.getElementById("style").value;
+      const width = document.getElementById("width").value;
+      const height = document.getElementById("height").value;
+      const steps = document.getElementById("steps").value;
+      const cfgScale = document.getElementById("cfg-scale").value;
+      const seed = document.getElementById("seed").value || Math.floor(Math.random() * 1000000000);
+      const loading = document.getElementById("loading");
+      const loadingAnimation = document.getElementById("loadingAnimation");
+      const imageGrid = document.getElementById("imageGrid");
+      const emptyState = document.getElementById("emptyState");
+
+      if (!prompt) {
+        alert("Please enter a prompt description for the image.");
+        return;
+      }
+
+      // Validate dimensions
+      if (width < 512 || width > 2048 || height < 512 || height > 2048) {
+        alert("Width and height must be between 512 and 2048.");
+        return;
+      }
+
+      loading.style.display = "block";
+      loadingAnimation.style.display = "block";
+      
+      if (emptyState.style.display !== 'none') {
+        emptyState.style.display = 'none';
+      }
+
+      try {
+        // Pilih API berdasarkan model yang dipilih
+        const apiConfig = API_CONFIG[model];
+        if (!apiConfig) {
+          throw new Error("Selected model is not configured");
+        }
+
+        let imageUrl;
+        
+        if (model === 'dall-e-3') {
+          // Contoh implementasi DALL-E 3
+          const response = await fetch(apiConfig.endpoint, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${apiConfig.apiKey}`
+            },
+            body: JSON.stringify({
+              model: "dall-e-3",
+              prompt: prompt,
+              n: 1,
+              size: `${width}x${height}`,
+              quality: "hd",
+              style: style === "realistic" ? "natural" : "vivid"
+            })
+          });
+          
+          const data = await response.json();
+          imageUrl = data.data[0].url;
+        } 
+        else if (model === 'stable-diffusion-xl') {
+          // Contoh implementasi Stable Diffusion
+          const response = await fetch(apiConfig.endpoint, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${apiConfig.apiKey}`
+            },
+            body: JSON.stringify({
+              prompt: prompt,
+              negative_prompt: negativePrompt,
+              width: parseInt(width),
+              height: parseInt(height),
+              steps: parseInt(steps),
+              cfg_scale: parseFloat(cfgScale),
+              seed: parseInt(seed),
+              style_preset: style
+            })
+          });
+          
+          const data = await response.json();
+          imageUrl = data.images[0]; // Format respons mungkin berbeda tergantung API
+        }
+        else {
+          // Fallback ke service placeholder jika model tidak dikenali
+          imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=${width}&height=${height}&nologo=true`;
+        }
+
+        // Tampilkan gambar
+        const img = new Image();
+        img.src = imageUrl;
+        img.alt = prompt;
+        img.loading = "lazy";
+        
+        const card = document.createElement("div");
+        card.className = "image-card";
+        
+        const actions = document.createElement("div");
+        actions.className = "image-actions";
+        
+        const downloadBtn = document.createElement("button");
+        downloadBtn.className = "action-btn";
+        downloadBtn.title = "Download";
+        downloadBtn.innerHTML = '<i class="fas fa-download"></i>';
+        downloadBtn.onclick = () => downloadImage(imageUrl, `ai-image-${Date.now()}.jpg`);
+        
+        const shareBtn = document.createElement("button");
+        shareBtn.className = "action-btn";
+        shareBtn.title = "Share";
+        shareBtn.innerHTML = '<i class="fas fa-share-alt"></i>';
+        shareBtn.onclick = () => shareImage(imageUrl, prompt);
+        
+        actions.appendChild(downloadBtn);
+        actions.appendChild(shareBtn);
+        
+        img.onload = () => {
+          loading.style.display = "none";
+          loadingAnimation.style.display = "none";
+          card.appendChild(img);
+          card.appendChild(actions);
+          imageGrid.prepend(card);
+        };
+
+        img.onerror = () => {
+          loading.style.display = "none";
+          loadingAnimation.style.display = "none";
+          alert("Failed to generate image. Please try a different prompt or check your connection.");
+        };
+      } catch (err) {
+        loading.style.display = "none";
+        loadingAnimation.style.display = "none";
+        alert("An error occurred. Please try again later.");
+        console.error("Image generation error:", err);
+      }
+    }
+
+    // [Fungsi downloadImage, shareImage, copyToClipboard tetap sama]
+  </script>
+</body>
+</html>
