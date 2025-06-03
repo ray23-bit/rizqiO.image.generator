@@ -1,0 +1,241 @@
+  /* Video Prompt Generator Styles - Neumorphism Version */
+:root {
+  /* Color Variables */
+  --primary: #9c66d7;
+  --primary-gradient: linear-gradient(135deg, #9c66d7 0%, #6a3093 100%);
+  --text: #333;
+  --text-muted: #666;
+  --card-bg: #f0f0f3;
+  --darker: #e0e0e3;
+  --glass-border: rgba(255, 255, 255, 0.5);
+  
+  /* Neumorphism Variables */
+  --neumorph-shadow: 8px 8px 15px rgba(163, 177, 198, 0.6), 
+                    -8px -8px 15px rgba(255, 255, 255, 0.7);
+  --neumorph-shadow-hover: 12px 12px 20px rgba(163, 177, 198, 0.7), 
+                         -12px -12px 20px rgba(255, 255, 255, 0.8);
+  --neumorph-inset: inset 3px 3px 5px rgba(163, 177, 198, 0.6), 
+                   inset -3px -3px 5px rgba(255, 255, 255, 0.7);
+  
+  /* Radius */
+  --radius: 15px;
+  --radius-sm: 10px;
+  
+  /* Notification Colors */
+  --success: #4CAF50;
+  --error: #F44336;
+}
+.video-prompt-generator {
+    background: var(--card-bg);
+    padding: 1.75rem;
+    border-radius: var(--radius);
+    margin-top: 2rem;
+    max-width: 1600px;
+    margin-left: auto;
+    margin-right: auto;
+    box-shadow: var(--neumorph-shadow);
+    border: 1px solid var(--glass-border);
+}
+
+.video-prompt-generator .section {
+    background: var(--card-bg);
+    border-radius: var(--radius-sm);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: var(--neumorph-inset);
+}
+
+.video-prompt-generator .input-group {
+    margin-bottom: 1rem;
+}
+
+.video-prompt-generator label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.video-prompt-generator input[type="text"],
+.video-prompt-generator select,
+.video-prompt-generator textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: var(--card-bg);
+    color: var(--text);
+    font-size: 0.9rem;
+    transition: all 0.2s;
+    box-shadow: var(--neumorph-inset);
+}
+
+.video-prompt-generator textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.video-prompt-generator select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%2394a3b8' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 12px;
+}
+
+.video-prompt-generator .output-group {
+    margin-top: 1.5rem;
+}
+
+.video-prompt-generator .generate-button,
+.video-prompt-generator .copy-button {
+    width: 100%;
+    padding: 0.75rem;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 0.5rem;
+    box-shadow: var(--neumorph-shadow);
+}
+
+.video-prompt-generator .generate-button {
+    background: var(--primary-gradient);
+    color: white;
+}
+
+.video-prompt-generator .generate-button:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--neumorph-shadow-hover);
+}
+
+.video-prompt-generator .copy-button {
+    background: var(--card-bg);
+    color: var(--text);
+}
+
+.video-prompt-generator .copy-button:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--neumorph-shadow-hover);
+}
+
+.video-prompt-generator .advanced-section {
+    position: relative;
+}
+
+.video-prompt-generator .advanced-content {
+    display: none;
+    padding-top: 1rem;
+}
+
+.video-prompt-generator .toggle-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+    cursor: pointer;
+    user-select: none;
+}
+
+.video-prompt-generator .toggle {
+    position: relative;
+    width: 40px;
+    height: 20px;
+    background: var(--card-bg);
+    border-radius: 10px;
+    margin-right: 0.75rem;
+    box-shadow: var(--neumorph-inset);
+}
+
+.video-prompt-generator .toggle:after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--text-muted);
+    top: 2px;
+    left: 2px;
+    transition: all 0.3s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.video-prompt-generator .advanced-toggle:checked + .toggle:after {
+    left: 22px;
+    background: var(--primary);
+}
+
+.panel-title {
+    color: var(--text);
+    margin-bottom: 0.5rem;
+    font-size: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .video-prompt-generator {
+        padding: 1.25rem;
+    }
+}
+
+.video-dialog {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.video-dialog.hidden {
+  display: none;
+}
+
+.video-dialog-content {
+  background: var(--card-bg);
+  padding: 2rem;
+  border-radius: var(--radius);
+  box-shadow: var(--neumorph-shadow);
+  text-align: center;
+}
+
+.video-dialog-content p {
+  margin-bottom: 1.5rem;
+  color: var(--text);
+}
+
+.video-dialog-content button {
+  background: var(--primary-gradient);
+  color: white;
+  border: none;
+  padding: 0.5rem 1.25rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  box-shadow: var(--neumorph-shadow);
+}
+
+.video-prompt-generator .clear-button {
+    width: 100%;
+    padding: 0.75rem;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 0.5rem;
+    background: #f9f9fb;
+    color: var(--text-muted);
+    box-shadow: var(--neumorph-shadow);
+}
+.video-prompt-generator .clear-button:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--neumorph-shadow-hover);
+}
