@@ -354,11 +354,13 @@ if (styleKeywordsInput.value.trim()) {
 const cfgVal = parseFloat(cfgScaleInput.value) || 12;
 const qualityParams = `width=${width}&height=${height}&nologo=true&seed=${randomSeed}&steps=${stepsVal}&cfg_scale=${cfgVal}&upscale=true`;
 
+                // In the generateImage function, modify the API URLs to include the referrer parameter:
+
                 let apiUrl;
                 if (model.value === 'default') {
-                    apiUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?${qualityParams}`;
+                apiUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?${qualityParams}&referrer=sDPXjJxKQyqE6jQh`;
                 } else {
-                    apiUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?model=${model.value}&${qualityParams}`;
+                apiUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?model=${model.value}&${qualityParams}&referrer=sDPXjJxKQyqE6jQh`;
                 }
 
                 if (fullNegativePrompt) {
