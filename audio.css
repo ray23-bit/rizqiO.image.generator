@@ -1,0 +1,175 @@
+  :root {
+  --panel-bg: #e0e0e0;
+  --shadow-dark: #bebebe;
+  --shadow-light: #ffffff;
+  --text-color: #333333;
+  --primary-color: #76b2fe;
+  --secondary-color: #b69efe;
+  --success-color: #4CAF50;
+}
+
+.audio-panel {
+  margin-top: 10px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.audio-player {
+  background: var(--panel-bg);
+  border-radius: 20px;
+  padding: 15px;
+  margin-bottom: 10px;
+  box-shadow: inset 6px 6px 12px var(--shadow-dark),
+              inset -6px -6px 12px var(--shadow-light);
+}
+
+.audio-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.audio-controls button {
+  background: var(--panel-bg);
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  color: var(--primary-color);
+  box-shadow: 6px 6px 12px var(--shadow-dark),
+              -6px -6px 12px var(--shadow-light);
+}
+
+.audio-progress {
+  flex: 1;
+  height: 8px;
+  background: var(--panel-bg);
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 3px 3px 6px var(--shadow-dark),
+              inset -3px -3px 6px var(--shadow-light);
+}
+
+.audio-progress-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  transition: width 0.1s linear;
+}
+
+.audio-time {
+  font-size: 0.8rem;
+  min-width: 80px;
+  text-align: center;
+}
+
+.audio-download {
+  background: var(--success-color);
+  color: white;
+  border: none;
+  border-radius: 15px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.voice-selector {
+  width: 100%;
+  padding: 12px;
+  border-radius: 15px;
+  background: var(--panel-bg);
+  border: none;
+  color: var(--text-color);
+  box-shadow: inset 5px 5px 10px var(--shadow-dark),
+              inset -5px -5px 10px var(--shadow-light);
+}
+
+.neumorph-btn {
+  background: var(--panel-bg);
+  color: var(--text-color);
+  padding: 10px 20px;
+  border-radius: 15px;
+  border: none;
+  box-shadow: 6px 6px 12px var(--shadow-dark),
+              -6px -6px 12px var(--shadow-light);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.neumorph-btn:disabled {
+  opacity: 0.6;
+}
+
+.neumorph-input {
+  background: var(--panel-bg);
+  box-shadow: inset 6px 6px 12px var(--shadow-dark),
+              inset -6px -6px 12px var(--shadow-light);
+  border: none;
+  padding: 12px;
+  border-radius: 15px;
+  color: var(--text-color);
+  width: 100%;
+}
+
+.loading {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  border: 3px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  border-top-color: var(--primary-color);
+  animation: spin 1s ease-in-out infinite;
+  margin: 0 auto;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.voice-controls {
+  display: flex;
+  gap: 10px;
+  margin: 15px 0;
+  align-items: center;
+}
+
+.voice-controls select {
+  flex: 1;
+}
+
+textarea#audio-prompt {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.backsound-controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.backsound-controls button i {
+  margin-right: 5px;
+}
+
+#backsound-info {
+  font-size: 0.8rem;
+  color: var(--text-color);
+  opacity: 0.8;
+  margin-left: 10px;
+  display: inline-block;
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
