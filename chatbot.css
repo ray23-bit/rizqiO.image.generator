@@ -76,3 +76,13 @@
               -5px -5px 10px var(--shadow-light);
   transition: all 0.3s ease;
 }
+
+.chatbot-loading-spinner {
+    display: inline-block;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
