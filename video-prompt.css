@@ -239,3 +239,47 @@
     transform: translateY(-2px);
     box-shadow: var(--neumorph-shadow-hover);
 }
+
+/* Add these styles to your existing CSS file */
+
+/* Multiple select styling */
+.video-prompt-generator select[multiple] {
+    height: auto;
+    min-height: 100px;
+    padding: 0.5rem;
+}
+
+.video-prompt-generator select[multiple] option {
+    padding: 0.5rem;
+    margin: 2px 0;
+    border-radius: 4px;
+    background: var(--darker);
+}
+
+.video-prompt-generator select[multiple] option:checked {
+    background: var(--primary);
+    color: white;
+}
+
+/* Character count indicator */
+.character-count {
+    display: inline-block;
+    margin-left: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+/* Video type specific styling */
+.video-type-tip {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 0.25rem;
+    display: block;
+}
+
+/* Responsive adjustments for new elements */
+@media (max-width: 768px) {
+    .video-prompt-generator select[multiple] {
+        min-height: 80px;
+    }
+}
